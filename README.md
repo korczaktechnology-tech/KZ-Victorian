@@ -280,9 +280,9 @@ Objetivo: organizar, otimizar e carregar os recursos gráficos e sonoros.
 
 A arquitetura define 15 MB como meta de otimização, e não como garantia fixa.
 
-## 🔴 Fase 10 — Produção, isolamento e deploy
+## 🟢 Fase 10 — Produção, isolamento e deploy
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: preparar o projeto para execução em produção.
 
@@ -381,9 +381,9 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 7. Construção, economia e logística | 🟢 |
 | 8. UI e eventos | 🟢 |
 | 9. Assets e memória | 🟢 |
-| 10. Produção, isolamento e deploy | 🔴 |
+| 10. Produção, isolamento e deploy | 🟢 |
 
-**Progresso das dez fases principais: 8/10 concluídas.**
+**Progresso das dez fases principais: 10/10 implementadas; conclusão final depende da validação CI.**
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
 **Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
