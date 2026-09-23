@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  # Public GitHub Pages deployment is served over HTTPS.
+  # Public GitHub Pages deployment is served over https.
   contents: read
   pages: write
   id-token: write
