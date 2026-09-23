@@ -4,7 +4,7 @@
 
 **Estado atual: 🟡 Em andamento**
 
-O WebLords é uma aplicação web de simulação e estratégia em tempo real, planejada para navegador moderno com WebGL 2.0. A arquitetura de referência define uma separação entre **Main Thread**, **Simulation Worker**, **SharedArrayBuffer** e uma simulação orientada a **ECS (Entity Component System)**.
+O WebLords é uma aplicação web de simulação e estratégia em tempo real, planejada para navegador moderno com WebGL 2.0. A arquitetura de referência define uma separação entre **Main Thread**, **Simulation Worker**, **memória de trabalho do Worker entre threads** e uma simulação orientada a **ECS (Entity Component System)**.
 
 > **Legenda**
 >
@@ -53,7 +53,7 @@ A fundação inicial do WebLords foi criada no repositório. Ela estabelece a es
 - Servidor de desenvolvimento sem dependências externas.
 - Testes automatizados do núcleo da fundação.
 - GitHub Actions para validação automática em push e pull request.
-- Núcleo inicial preparado para receber SharedArrayBuffer, ECS e sistemas futuros.
+- Núcleo inicial preparado para receber memória de trabalho do Worker entre threads, ECS e sistemas futuros.
 - Estrutura de pastas alinhada à arquitetura de referência.
 
 > A Fase 0 cria a fundação. Ela não significa que as funcionalidades das Fases 1–10 já estejam implementadas.
@@ -89,16 +89,16 @@ A arquitetura especifica que nenhum sistema de jogo deve depender diretamente do
 
 **Situação: 🟢 Concluída**
 
-Objetivo: criar e organizar a memória compartilhada utilizada pela simulação.
+Objetivo: criar e organizar a memória de trabalho do Worker utilizada pela simulação.
 
 ### Deve conter
-- Inicialização do SharedArrayBuffer.
+- Inicialização do memória de trabalho do Worker entre threads.
 - Capacidade inicial de referência de 64 MB, configurável.
 - constants.js centralizando offsets e capacidades.
 - Mapeamento dos TypedArrays.
 - Regiões de memória documentadas.
 - Validação do tamanho total antes da inicialização.
-- Tratamento claro para navegadores sem suporte ao SharedArrayBuffer.
+- Tratamento claro para navegadores sem suporte ao memória de trabalho do Worker entre threads.
 
 O mapa de memória previsto inclui posições, velocidades, estados, população, terreno, recursos, construções, economia, logística e navegação/Flow Field.
 
@@ -139,7 +139,7 @@ Objetivo: construir o núcleo de dados e regras que representam o mundo.
 - Logistics
 - Pathfinding
 
-A implementação utiliza armazenamento contíguo com TypedArrays, máscaras de componentes, IDs reutilizáveis, consultas lineares e integração das posições/velocidades com as regiões correspondentes do SharedArrayBuffer. O núcleo executa os oito sistemas definidos na ordem arquitetural, sem introduzir dependência do DOM.
+A implementação utiliza armazenamento contíguo com TypedArrays, máscaras de componentes, IDs reutilizáveis, consultas lineares e integração das posições/velocidades com as regiões correspondentes do memória de trabalho do Worker entre threads. O núcleo executa os oito sistemas definidos na ordem arquitetural, sem introduzir dependência do DOM.
 
 ## 🟢 Fase 4 — Simulation Worker
 
@@ -157,7 +157,7 @@ Objetivo: transferir o processamento pesado do mundo para o Worker.
 - Tarefas.
 - Construção.
 - Navegação.
-- Atualização do SharedArrayBuffer.
+- Atualização do memória de trabalho do Worker entre threads.
 - Emissão de eventos relevantes.
 
 A referência arquitetural utiliza 30 ticks por segundo, mas essa frequência é uma referência de engenharia e deverá ser medida na prática.
@@ -256,7 +256,7 @@ Objetivo: construir a interface que apresenta o estado do mundo sem incorporar a
 - selectionChanged
 - worldStateChanged
 
-A UI deve reagir a eventos relevantes, evitando polling agressivo da memória compartilhada.
+A UI deve reagir a eventos relevantes, evitando polling agressivo da memória de trabalho do Worker.
 
 ## 🟢 Fase 9 — Assets e memória
 
@@ -291,10 +291,9 @@ Objetivo: preparar o projeto para execução em produção.
 - Minificação do JavaScript.
 - Otimização dos assets.
 - Geração da versão de produção.
-- Ambiente compatível com SharedArrayBuffer.
+- Ambiente compatível com memória de trabalho do Worker entre threads.
 - HTTPS.
-- Cross-Origin-Opener-Policy: same-origin.
-- Cross-Origin-Embedder-Policy: require-corp.
+- Comunicação entre threads por postMessage e ArrayBuffer transferível.
 - Verificação de recursos externos.
 - Teste da versão publicada em navegador real.
 
@@ -317,7 +316,7 @@ Os testes fazem parte da conclusão do projeto e devem abranger:
 
 ### Testes de integração
 - Main Thread ↔ Worker
-- Worker ↔ SharedArrayBuffer
+- Worker ↔ memória de trabalho do Worker entre threads
 - UI ↔ Eventos
 - Input ↔ Comandos
 - Renderer ↔ Estado
@@ -434,7 +433,7 @@ A Fase 7 possui validação automatizada para confirmar:
 - Eventos de estoque, construção, produção e logística.
 - Comandos Main Thread → Worker → validação do mundo.
 - Comandos aceitos e rejeitados sem alteração indevida do estado.
-- Regiões economy e logistics do SharedArrayBuffer.
+- Regiões economy e logistics do memória de trabalho do Worker entre threads.
 - Testes automatizados e verificador estrutural específico da fase.
 
 A Fase 7 é considerada concluída após a execução bem-sucedida do GitHub Actions no commit correspondente.
@@ -444,7 +443,7 @@ A Fase 6 possui validação automatizada para confirmar:
 
 - Grade de terreno com indexação linear e conversão entre índice e coordenadas.
 - Células livres, obstáculos, água, estradas e custos de deslocamento.
-- Uso das regiões terrain e navigation do SharedArrayBuffer.
+- Uso das regiões terrain e navigation do memória de trabalho do Worker entre threads.
 - Flow Fields com um ou múltiplos destinos.
 - Cálculo de custo acumulado e direção por célula.
 - Navegação diagonal com prevenção de corte por cantos bloqueados.
@@ -481,10 +480,10 @@ A Fase 5 é considerada concluída após a execução bem-sucedida do GitHub Act
 A Fase 4 possui validação automatizada para confirmar:
 
 - Inicialização do `SimulationCore` dentro do Simulation Worker.
-- Inicialização da memória compartilhada antes do loop.
+- Inicialização da memória de trabalho do Worker antes do loop.
 - Execução da simulação com referência de 30 ticks/s.
 - Loop temporal com acumulador, timestep fixo e limite de catch-up.
-- Atualização atômica do tick no SharedArrayBuffer.
+- Atualização atômica do tick no memória de trabalho do Worker entre threads.
 - Processamento dos oito sistemas do núcleo da simulação dentro do Worker.
 - Canal de comandos Main Thread → Worker com processamento no limite do tick.
 - Emissão de snapshots e eventos Worker → Main Thread.
@@ -502,7 +501,7 @@ A Fase 3 possui validação automatizada para confirmar:
 - ECS orientado a dados com TypedArrays contíguos.
 - Máscaras de componentes e consultas lineares.
 - Criação, destruição e reutilização de IDs.
-- Posições e velocidades vinculadas ao SharedArrayBuffer existente.
+- Posições e velocidades vinculadas ao memória de trabalho do Worker entre threads existente.
 - Implementação dos oito sistemas previstos para a fase.
 - Ordem determinística dos sistemas no núcleo da simulação.
 - Execução de tick e atualização de métricas.
@@ -513,14 +512,14 @@ A Fase 3 possui validação automatizada para confirmar:
 
 A Fase 2 possui validação automatizada para confirmar:
 
-- Criação do SharedArrayBuffer com capacidade inicial de 64 MiB.
+- Criação do memória de trabalho do Worker entre threads com capacidade inicial de 64 MiB.
 - Layout centralizado em constants.js.
 - As dez regiões previstas pela arquitetura.
 - Offsets calculados em um único ponto.
 - Ausência de sobreposição entre regiões.
 - Mapeamento das regiões em Float32Array, Int32Array e Uint8Array.
 - Validação de tamanho antes do uso.
-- Erros claros para memória insuficiente e ambiente sem SharedArrayBuffer.
+- Erros claros para memória insuficiente e ambiente sem memória de trabalho do Worker entre threads.
 - Inicialização da memória antes do início do loop de simulação.
 - Compartilhamento do mesmo buffer entre Main Thread e Worker.
 - Documentação do mapa de memória em docs/memory-layout.md.
@@ -552,9 +551,19 @@ A execução do GitHub Actions no commit de conclusão da Fase 1 terminou com **
 
 A revisão consolidada reforça os critérios de conclusão dessas fases:
 
-- **Fase 3:** ECS orientado a dados, nove componentes, oito tipos de entidade, máscaras, IDs reutilizáveis, armazenamento compartilhado de Position/Velocity e execução rastreável dos oito sistemas na ordem arquitetural.
-- **Fase 4:** SimulationCore executado no Worker, timestep fixo, acumulador, limite de catch-up, comandos no limite do tick, snapshots/eventos, reset que reconstrói o estado completo e sincronização do tick no SharedArrayBuffer.
-- **Fase 6:** custos do terreno armazenados na região compartilhada de terreno, Flow Fields reconstruíveis, múltiplos destinos, prevenção de corte diagonal, invalidação/rebuild de navegação e Spatial Partition.
+- **Fase 3:** ECS orientado a dados, nove componentes, oito tipos de entidade, máscaras, IDs reutilizáveis, armazenamento local de Position/Velocity no Worker e execução rastreável dos oito sistemas na ordem arquitetural.
+- **Fase 4:** SimulationCore executado no Worker, timestep fixo, acumulador, limite de catch-up, comandos no limite do tick, snapshots/eventos, reset que reconstrói o estado completo e sincronização do tick no memória de trabalho do Worker entre threads.
+- **Fase 6:** custos do terreno armazenados na região local de terreno no Worker, Flow Fields reconstruíveis, múltiplos destinos, prevenção de corte diagonal, invalidação/rebuild de navegação e Spatial Partition.
 - **Fase 8:** estado da UI orientado a eventos, totais de recursos derivados do estado do mundo, seleção por Spatial Partition, comandos aceitos/rejeitados, HUD funcional, menu funcional e browser smoke com interação real do menu.
 
 A marcação 🟢 continua condicionada à execução bem-sucedida do CI e da validação de produção no commit correspondente.
+
+## Migração de transporte — SharedArrayBuffer removido
+
+O modelo anterior baseado em SharedArrayBuffer foi retirado para manter o frontend integralmente compatível com GitHub Pages. O estado autoritativo agora permanece no Simulation Worker. A Main Thread envia comandos por postMessage e recebe snapshots compactos de renderização por ArrayBuffer transferível, além de eventos estruturados.
+
+A migração está organizada em três etapas:
+
+- **Etapa 0 — Preparação e fundação:** substituição da memória compartilhada por ArrayBuffer local e remoção das dependências de Atomics.
+- **Etapa 1 — Rascunho:** novo protocolo Main Thread ↔ Worker, snapshots transferíveis e manutenção do timestep fixo.
+- **Etapa 2 — Compleição:** atualização de testes, validadores, documentação, runtime, smoke test e deploy para GitHub Pages sem COOP/COEP.
