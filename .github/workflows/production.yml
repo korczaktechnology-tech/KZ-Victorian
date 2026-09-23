@@ -32,6 +32,8 @@ jobs:
         run: npm run build:production
       - name: Install browser runtime
         run: npm install --no-save playwright@1.55.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Start isolated production server
         run: |
           node scripts/production-server.mjs _dist > /tmp/weblords-server.log 2>&1 &
