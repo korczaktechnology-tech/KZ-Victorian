@@ -5,8 +5,7 @@ import {EntityType} from "../src/core/entities.js";
 import {RESOURCE} from "../src/systems/economy.js";
 import {JOB_STATE,JOB_TYPE,updateLogistics} from "../src/systems/logistics.js";
 import {updateProduction} from "../src/systems/production.js";
-import {MEMORY} from "../src/core/constants.js";
-import {createSharedMemory,createMemoryView} from "../src/core/memory.js";
+import {createLocalMemory,createMemoryView} from "../src/core/memory.js";
 import {SimulationCore} from "../src/systems/simulation-core.js";
 
 function world(){const w=createSimulationWorld(null,undefined,32,32);w.bootstrap();return w;}
@@ -24,7 +23,7 @@ test("Fase 7: produção respeita duração e consome entrada ao concluir",()=>{
  assert.equal(inv[RESOURCE.PLANKS],1); assert.equal(inv[RESOURCE.WOOD],0); assert.ok(w.events.some(e=>e.type==="productionCompleted"));
 });
 test("Fase 7: armazém gera pedido e logística busca agente próximo",()=>{
- const w=world(),warehouse=2,sawmill=3,worker=5; w.entities.get(warehouse,"Inventory")[RESOURCE.WOOD]=4;
+ const w=world(),warehouse=2,sawmill=3; w.entities.get(warehouse,"Inventory")[RESOURCE.WOOD]=4;
  assert.equal(w.queueProduction(sawmill,"SAWMILL_PLANKS").ok,true); assert.equal(w.productionJobs.get(sawmill).state,"waiting-input"); updateProduction(w);
  updateLogistics(w);
  assert.ok(w.logisticsRequests.size>=1); const request=[...w.logisticsRequests.values()][0];
@@ -37,30 +36,26 @@ test("Fase 7: logística percorre ciclo completo de tarefa",()=>{
  updateLogistics(w); assert.equal(w.entities.get(worker,"Job")[2],JOB_STATE.IDLE);
 });
 test("Fase 7: cadeia automática armazém → agente → produção é integrada no Worker",()=>{
- const memory=createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES));
+ const memory=createMemoryView(createLocalMemory());
  const core=new SimulationCore(memory);
  const warehouse=2,sawmill=3;
  core.world.entities.get(warehouse,"Inventory")[RESOURCE.WOOD]=2;
  assert.equal(core.world.queueProduction(sawmill,"SAWMILL_PLANKS").ok,true);
  assert.equal(core.world.productionJobs.get(sawmill).state,"waiting-input");
-
  core.tick();
  assert.equal(core.world.logisticsRequests.size,1);
  assert.equal(core.world.logisticsRequests.get(1).status,"assigned");
-
  core.tick();
  assert.equal(core.world.logisticsTasks.size,1);
  core.tick();
  assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.WOOD],2);
-
  for(let i=0;i<30;i+=1) core.tick();
  assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.WOOD],0);
  assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.PLANKS],1);
 });
-
 test("Fase 7: logística rejeita estoque insuficiente",()=>{const w=world();const result=w.createLogisticsTask({workerId:5,sourceId:2,destinationId:3,resource:RESOURCE.WOOD,quantity:1});assert.equal(result.ok,false);assert.equal(result.reason,"insufficient-stock");});
-test("Fase 7: serviços econômicos funcionam sobre SharedArrayBuffer",()=>{
- const memory=createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES)); const core=new SimulationCore(memory); core.world.entities.get(2,"Inventory")[RESOURCE.WOOD]=20; core.world.entities.get(2,"Inventory")[RESOURCE.STONE]=10;
+test("Fase 7: serviços econômicos funcionam sobre memória local do Worker",()=>{
+ const memory=createMemoryView(createLocalMemory()); const core=new SimulationCore(memory); core.world.entities.get(2,"Inventory")[RESOURCE.WOOD]=20; core.world.entities.get(2,"Inventory")[RESOURCE.STONE]=10;
  assert.equal(core.world.requestConstruction(EntityType.HOUSE,20,20).ok,true); assert.equal(core.world.queueProduction(3,"SAWMILL_PLANKS").ok,true); core.world.entities.get(3,"Inventory")[RESOURCE.WOOD]=2;
  const before=core.world.productionJobs.get(3).remaining; core.tick(); assert.ok(core.world.metrics.produced>=0); assert.equal(core.world.productionJobs.get(3)?.remaining??0,before-1);
 });
