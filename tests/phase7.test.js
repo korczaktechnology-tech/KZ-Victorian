@@ -26,6 +26,7 @@ test("Fase 7: produção respeita duração e consome entrada ao concluir",()=>{
 test("Fase 7: armazém gera pedido e logística busca agente próximo",()=>{
  const w=world(),warehouse=2,sawmill=3,worker=5; w.entities.get(warehouse,"Inventory")[RESOURCE.WOOD]=4;
  assert.equal(w.queueProduction(sawmill,"SAWMILL_PLANKS").ok,true); assert.equal(w.productionJobs.get(sawmill).state,"waiting-input"); updateProduction(w);
+ const {updateLogistics}=await import("../src/systems/logistics.js"); updateLogistics(w);
  assert.ok(w.logisticsRequests.size>=1); const request=[...w.logisticsRequests.values()][0];
  assert.equal(request.sourceId,warehouse); assert.equal(request.destinationId,sawmill); assert.equal(request.type,JOB_TYPE.SUPPLY); assert.equal(request.workerId,worker); assert.equal(request.status,"assigned");
 });
