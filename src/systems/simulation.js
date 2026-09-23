@@ -132,6 +132,9 @@ export class Simulation {
           case "production.queue":
             result = this.#core.world.queueProduction(payload.entityId, payload.recipe);
             break;
+          case "selection.request":
+            result = this.#core.world.selectAt(payload.x, payload.y, payload.radius);
+            break;
           default:
             result = { ok: false, reason: "unknown-command" };
         }
