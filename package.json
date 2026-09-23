@@ -5,7 +5,7 @@
   "description": "WebLords — simulador web de estratégia e simulação em tempo real.",
   "type": "module",
   "scripts": {
-    "test": "node --test",
+    "test": "node --test --test-concurrency=1",
     "check": "node scripts/check-foundation.mjs",
     "dev": "node scripts/dev-server.mjs",
     "check:pipeline": "node scripts/check-pipeline.mjs",
