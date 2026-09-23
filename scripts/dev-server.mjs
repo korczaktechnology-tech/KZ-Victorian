@@ -26,8 +26,9 @@ const server = createServer(async (request, response) => {
     const requested = decodeURIComponent((request.url || "/").split("?")[0]);
     const relative = requested === "/" ? "/index.html" : requested;
     const filePath = normalize(join(root, relative));
+    const rootPrefix = root.endsWith("/") ? root : `${root}/`;
 
-    if (!filePath.startsWith(root) || !existsSync(filePath)) {
+    if (filePath !== root && !filePath.startsWith(rootPrefix) || !existsSync(filePath)) {
       response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
       response.end("Not Found");
       return;
