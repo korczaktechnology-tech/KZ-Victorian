@@ -10,10 +10,6 @@ export const WORLD = Object.freeze({
   DEFAULT_HEIGHT: 128
 });
 
-/**
- * Capacidades de armazenamento da memória compartilhada.
- * Elas são referências iniciais e permanecem configuráveis.
- */
 export const MEMORY_CAPACITIES = Object.freeze({
   entities: 4096,
   population: 8192,
@@ -26,16 +22,8 @@ export const MEMORY_CAPACITIES = Object.freeze({
 });
 
 export const MEMORY_REGION_NAMES = Object.freeze([
-  "positions",
-  "velocities",
-  "states",
-  "population",
-  "terrain",
-  "resources",
-  "buildings",
-  "economy",
-  "logistics",
-  "navigation"
+  "positions","velocities","states","population","terrain",
+  "resources","buildings","economy","logistics","navigation"
 ]);
 
 const BYTES_PER = Object.freeze({
@@ -44,11 +32,6 @@ const BYTES_PER = Object.freeze({
   uint8: Uint8Array.BYTES_PER_ELEMENT
 });
 
-/**
- * Cada região possui uma finalidade única. Os offsets são calculados
- * exclusivamente aqui para impedir que sistemas individuais inventem
- * posições de memória.
- */
 const REGION_DEFINITIONS = Object.freeze({
   positions: { bytesPerElement: BYTES_PER.float32, length: MEMORY_CAPACITIES.entities * 3 },
   velocities: { bytesPerElement: BYTES_PER.float32, length: MEMORY_CAPACITIES.entities * 3 },
@@ -85,10 +68,8 @@ export function createMemoryLayout() {
     offset += byteLength;
   }
 
-  const totalBytes = align(offset, 8);
-
   return Object.freeze({
-    totalBytes,
+    totalBytes: align(offset, 8),
     regions: Object.freeze(regions)
   });
 }
