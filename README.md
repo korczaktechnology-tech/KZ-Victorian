@@ -183,9 +183,9 @@ Objetivo: criar o sistema de renderização gráfica.
 
 A renderização deve permanecer independente da execução das regras econômicas e da simulação populacional.
 
-## 🔴 Fase 6 — Mapa e Flow Field
+## 🟢 Fase 6 — Mapa e Flow Field
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: criar o sistema espacial utilizado pelo mundo e pela navegação.
 
@@ -377,13 +377,13 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 3. ECS e núcleo da simulação | 🟢 |
 | 4. Simulation Worker | 🟢 |
 | 5. WebGL 2.0 | 🟢 |
-| 6. Mapa e Flow Field | 🔴 |
+| 6. Mapa e Flow Field | 🟢 |
 | 7. Construção, economia e logística | 🔴 |
 | 8. UI e eventos | 🔴 |
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 5/10 concluídas.**
+**Progresso das dez fases principais: 6/10 concluídas.**
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
 **Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
@@ -401,7 +401,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 3. 🟢 ECS e núcleo da simulação
 4. 🟢 Simulation Worker
 5. 🟢 WebGL 2.0
-6. 🔴 Mapa e Flow Field
+6. 🟢 Mapa e Flow Field
 7. 🔴 Construção, economia e logística
 8. 🔴 UI e eventos
 9. 🔴 Assets e memória
@@ -417,6 +417,25 @@ Este README deve ser atualizado conforme o desenvolvimento avançar:
 
 - 🔴 → 🟡 quando a implementação da fase começar.
 - 🟡 → 🟢 somente após implementação, integração e validação.
+
+### Validação da Fase 6
+
+A Fase 6 possui validação automatizada para confirmar:
+
+- Grade de terreno com indexação linear e conversão entre índice e coordenadas.
+- Células livres, obstáculos, água, estradas e custos de deslocamento.
+- Uso das regiões terrain e navigation do SharedArrayBuffer.
+- Flow Fields com um ou múltiplos destinos.
+- Cálculo de custo acumulado e direção por célula.
+- Navegação diagonal com prevenção de corte por cantos bloqueados.
+- Reconstrução do Flow Field após alteração do mapa.
+- Spatial Partition para inserção, reconstrução, consulta por célula e consulta por raio.
+- Integração de construções e estradas com a navegabilidade do mundo.
+- Consulta do Flow Field pelo sistema Pathfinding.
+- Atualização da navegação dentro do ciclo do SimulationCore.
+- Testes automatizados e verificação estrutural específica da fase.
+
+A Fase 6 é considerada concluída após a execução bem-sucedida do GitHub Actions no commit correspondente.
 
 ### Validação da Fase 5
 
