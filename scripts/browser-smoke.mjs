@@ -1,0 +1,17 @@
+import {chromium} from "playwright";
+const base=process.env.BASE_URL??"http://127.0.0.1:4173";
+const browser=await chromium.launch({headless:true});
+const page=await browser.newPage();
+const errors=[];
+page.on("console",m=>{if(m.type()==="error")errors.push(m.text());});
+page.on("pageerror",e=>errors.push(e.message));
+const response=await page.goto(base,{waitUntil:"networkidle"});
+if(!response||response.status()!==200)throw new Error("WebLords: página de produção não respondeu 200.");
+const headers=await response.allHeaders();
+if(headers["cross-origin-opener-policy"]!=="same-origin")throw new Error("WebLords: COOP ausente no runtime.");
+if(headers["cross-origin-embedder-policy"]!=="require-corp")throw new Error("WebLords: COEP ausente no runtime.");
+const result=await page.evaluate(()=>({isolated:globalThis.crossOriginIsolated,sab:typeof globalThis.SharedArrayBuffer==="function",webgl2:!!document.createElement("canvas").getContext("webgl2"),interface:!!document.querySelector("#interface")}));
+if(!result.isolated||!result.sab||!result.webgl2||!result.interface)throw new Error("WebLords: capacidades de produção não estão operacionais: "+JSON.stringify(result));
+if(errors.length)throw new Error("WebLords: erros no navegador: "+errors.join(" | "));
+await browser.close();
+console.log("WebLords browser smoke: OK — HTTPS/isolamento, SAB, WebGL2, UI e execução inicial validados.");
