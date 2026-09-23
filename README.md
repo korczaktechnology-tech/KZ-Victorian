@@ -16,9 +16,43 @@ O WebLords é uma aplicação web de simulação e estratégia em tempo real, pl
 
 ### Estado verificado do repositório
 
-No momento desta atualização, o repositório contém apenas a documentação inicial do projeto (README.md). Portanto, **não há evidência no código do repositório de que alguma das dez fases de implementação já tenha sido concluída**.
+A fundação inicial da aplicação já foi criada no repositório: ponto de entrada HTML, folha de estilos, Main Thread, Simulation Worker, núcleo inicial, estrutura de renderização, sistemas-base e diretórios de suporte. Essa fundação corresponde à **Fase 0** e serve como preparação para a Fase 1.
+
+A Fase 0 não é uma das dez fases funcionais do roadmap principal. Ela existe para estabelecer a base física do projeto sem antecipar as implementações das fases seguintes.
 
 A arquitetura completa estabelece que o WebLords só deve ser considerado concluído quando as dez fases estiverem implementadas, integradas e validadas. [Arquitetura de referência]
+
+---
+
+# Fase 0 — Fundação da aplicação
+
+**Situação: 🟢 Concluída**
+
+A fundação inicial do WebLords foi criada no repositório. Ela estabelece a estrutura física necessária para começar a implementação das dez fases do roadmap sem ainda considerar os sistemas de jogo como concluídos.
+
+### Estrutura criada
+- `index.html` — ponto de entrada da aplicação.
+- `style.css` — base visual da aplicação.
+- `src/main.js` — entrada da Main Thread.
+- `src/worker.js` — entrada do Simulation Worker.
+- `src/core/` — memória, constantes, entidades, ECS e ponte de simulação.
+- `src/systems/` — pontos de entrada dos sistemas de simulação.
+- `src/render/` — base do renderer, câmera, shaders, meshes e instâncias.
+- `assets/` — diretório reservado para recursos.
+- `tests/` — diretório reservado para testes.
+- `docs/` — diretório reservado para documentação complementar.
+- `scripts/` — diretório reservado para automações auxiliares.
+
+### O que a Fase 0 entrega
+- Aplicação com entrada HTML definida.
+- Carregamento por ES Modules.
+- Canvas preparado para WebGL 2.0.
+- Ponte inicial entre Main Thread e Worker.
+- Worker capaz de iniciar e interromper um loop de simulação.
+- Núcleo inicial preparado para receber SharedArrayBuffer, ECS e sistemas futuros.
+- Estrutura de pastas alinhada à arquitetura de referência.
+
+> A Fase 0 cria a fundação. Ela não significa que as funcionalidades das Fases 1–10 já estejam implementadas.
 
 ---
 
@@ -334,7 +368,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 
 | Fase | Status |
 |---|:---:|
-| 1. Estrutura e pipeline | 🔴 |
+| 1. Estrutura e pipeline | 🟡 |
 | 2. Bootstrapping e memória | 🔴 |
 | 3. ECS e núcleo da simulação | 🔴 |
 | 4. Simulation Worker | 🔴 |
@@ -345,7 +379,8 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso de implementação verificado no repositório: 0/10 fases concluídas.**
+**Progresso das dez fases principais: 0/10 concluídas.**  
+**Fase 0 — Fundação: 🟢 concluída.**
 
 > A documentação arquitetural já está definida, mas documentação não é contabilizada como implementação. O status acima reflete o estado efetivamente encontrado no repositório no momento desta atualização.
 
@@ -353,7 +388,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 
 # Ordem oficial de execução
 
-1. 🔴 Estrutura e pipeline
+1. 🟡 Estrutura e pipeline
 2. 🔴 Bootstrapping e memória
 3. 🔴 ECS e núcleo da simulação
 4. 🔴 Simulation Worker
