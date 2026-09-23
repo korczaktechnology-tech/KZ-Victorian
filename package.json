@@ -1,6 +1,6 @@
 {
   "name": "weblords",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "description": "WebLords — simulador web de estratégia e simulação em tempo real.",
   "type": "module",
@@ -9,13 +9,14 @@
     "check": "node scripts/check-foundation.mjs",
     "dev": "node scripts/dev-server.mjs",
     "check:pipeline": "node scripts/check-pipeline.mjs",
-    "check:all": "npm run check && npm run check:pipeline && npm run check:memory && npm run check:ecs && npm run check:worker && npm run check:renderer && npm run check:world && npm run check:economy && npm test",
+    "check:all": "npm run check && npm run check:pipeline && npm run check:memory && npm run check:ecs && npm run check:worker && npm run check:renderer && npm run check:world && npm run check:economy && npm run check:ui && npm test",
     "check:memory": "node scripts/check-memory.mjs",
     "check:ecs": "node scripts/check-ecs.mjs",
     "check:worker": "node scripts/check-worker.mjs",
     "check:renderer": "node scripts/check-renderer.mjs",
     "check:world": "node scripts/check-world.mjs",
-    "check:economy": "node scripts/check-economy.mjs"
+    "check:economy": "node scripts/check-economy.mjs",
+    "check:ui": "node scripts/check-ui.mjs"
   },
   "engines": {
     "node": ">=20"
