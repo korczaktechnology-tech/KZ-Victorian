@@ -1,5 +1,3 @@
-import { TerrainFlag } from "./map.js";
-
 const INF = 0x3fffffff;
 
 export class FlowField {
@@ -34,10 +32,11 @@ export class FlowField {
     const field = this.get(id);
     const index = this.map.index(x, y);
     if (!field || index < 0) return null;
-    return { x: field.directionX[index], y: field.directionY[index], cost: field.cost[index] };
+    return { x: field.directionX[index], y: field.directionY[index], cost: field.cost[index] >= INF ? -1 : field.cost[index] };
   }
 
   #build(destinations, options) {
+    const diagonal = options?.diagonal !== false;
     const normalized = [...new Set((destinations ?? []).map(d => this.map.index(d.x, d.y)).filter(i => i >= 0))];
     if (normalized.length === 0) throw new RangeError("WebLords: Flow Field precisa de pelo menos um destino válido.");
     const cost = new Int32Array(this.map.cells);
@@ -56,34 +55,36 @@ export class FlowField {
     while (queue.size > 0) {
       const current = queue.pop();
       if (current.cost !== cost[current.index]) continue;
-      this.map.neighbors(current.index, (next) => {
+      this.map.neighbors(current.index, (next, dx, dy) => {
         if (this.map.isBlockedIndex(next)) return;
-        const step = Math.max(1, this.map.getCostIndex(next));
-        const nextCost = current.cost + step;
+        if (dx !== 0 && dy !== 0) {
+          const currentCoords = this.map.coordinates(current.index);
+          if (this.map.isBlocked(currentCoords.x + dx, currentCoords.y) || this.map.isBlocked(currentCoords.x, currentCoords.y + dy)) return;
+        }
+        const step = Math.max(1, this.map.getCostIndex(next)) * (dx !== 0 && dy !== 0 ? 1.4142 : 1);
+        const nextCost = Math.min(INF, Math.floor(current.cost + step));
         if (nextCost < cost[next]) {
           cost[next] = nextCost;
           queue.push(nextCost, next);
         }
-      }, true);
+      }, diagonal);
     }
 
     for (let index = 0; index < this.map.cells; index += 1) {
       if (cost[index] === INF || this.map.isBlockedIndex(index)) continue;
-      let best = index, bestCost = cost[index];
+      let bestCost = cost[index];
       this.map.neighbors(index, (next, dx, dy) => {
         if (cost[next] < bestCost) {
-          best = next;
           bestCost = cost[next];
           directionX[index] = dx;
           directionY[index] = dy;
         }
-      }, true);
-      if (best === index) { directionX[index] = 0; directionY[index] = 0; }
+      }, diagonal);
     }
 
     return Object.freeze({
       destinations: Object.freeze(normalized.map(index => this.map.coordinates(index))),
-      options: Object.freeze({ diagonal: true, ...(options ?? {}) }),
+      options: Object.freeze({ diagonal }),
       cost, directionX, directionY,
       revision: this.map.revision
     });
@@ -134,8 +135,4 @@ class MinHeap {
     }
     return root;
   }
-}
-
-export function isRoad(map, index) {
-  return (map.flags[index * 4] & TerrainFlag.ROAD) !== 0;
 }
