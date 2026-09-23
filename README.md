@@ -383,7 +383,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 3/10 concluídas.**  
+**Progresso das dez fases principais: 3/10 concluídas.**
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
 **Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
