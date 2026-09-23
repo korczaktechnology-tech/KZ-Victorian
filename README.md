@@ -102,9 +102,9 @@ Objetivo: criar e organizar a memória compartilhada utilizada pela simulação.
 
 O mapa de memória previsto inclui posições, velocidades, estados, população, terreno, recursos, construções, economia, logística e navegação/Flow Field.
 
-## 🔴 Fase 3 — ECS e núcleo da simulação
+## 🟢 Fase 3 — ECS e núcleo da simulação
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: construir o núcleo de dados e regras que representam o mundo.
 
@@ -139,7 +139,7 @@ Objetivo: construir o núcleo de dados e regras que representam o mundo.
 - Logistics
 - Pathfinding
 
-A implementação deve privilegiar estruturas de dados eficientes, loops lineares e evitar alocações repetitivas durante os ticks.
+A implementação utiliza armazenamento contíguo com TypedArrays, máscaras de componentes, IDs reutilizáveis, consultas lineares e integração das posições/velocidades com as regiões correspondentes do SharedArrayBuffer. O núcleo executa os oito sistemas definidos na ordem arquitetural, sem introduzir dependência do DOM.
 
 ## 🔴 Fase 4 — Simulation Worker
 
@@ -374,7 +374,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 |---|:---:|
 | 1. Estrutura e pipeline | 🟢 |
 | 2. Bootstrapping e memória | 🟢 |
-| 3. ECS e núcleo da simulação | 🔴 |
+| 3. ECS e núcleo da simulação | 🟢 |
 | 4. Simulation Worker | 🔴 |
 | 5. WebGL 2.0 | 🔴 |
 | 6. Mapa e Flow Field | 🔴 |
@@ -383,10 +383,11 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 2/10 concluídas.**  
+**Progresso das dez fases principais: 3/10 concluídas.**  
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
-**Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**
+**Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
+**Fase 3 — ECS e núcleo da simulação: 🟢 concluída e validada pelo CI.**
 
 > A documentação arquitetural já está definida, mas documentação não é contabilizada como implementação. O status acima reflete o estado efetivamente encontrado no repositório no momento desta atualização.
 
@@ -396,7 +397,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 
 1. 🟢 Estrutura e pipeline
 2. 🟢 Bootstrapping e memória
-3. 🔴 ECS e núcleo da simulação
+3. 🟢 ECS e núcleo da simulação
 4. 🔴 Simulation Worker
 5. 🔴 WebGL 2.0
 6. 🔴 Mapa e Flow Field
@@ -415,6 +416,22 @@ Este README deve ser atualizado conforme o desenvolvimento avançar:
 
 - 🔴 → 🟡 quando a implementação da fase começar.
 - 🟡 → 🟢 somente após implementação, integração e validação.
+
+### Validação da Fase 3
+
+A Fase 3 possui validação automatizada para confirmar:
+
+- As oito entidades iniciais previstas pela arquitetura.
+- Os nove componentes: Position, Velocity, Job, Inventory, Needs, Building, Production, Movement e Health.
+- ECS orientado a dados com TypedArrays contíguos.
+- Máscaras de componentes e consultas lineares.
+- Criação, destruição e reutilização de IDs.
+- Posições e velocidades vinculadas ao SharedArrayBuffer existente.
+- Implementação dos oito sistemas previstos para a fase.
+- Ordem determinística dos sistemas no núcleo da simulação.
+- Execução de tick e atualização de métricas.
+- Eventos de construção e tarefas.
+- Validação específica pelo `check-ecs` e testes automatizados.
 
 ### Validação da Fase 2
 
