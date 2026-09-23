@@ -36,6 +36,29 @@ test("Fase 7: logística percorre ciclo completo de tarefa",()=>{
  updateLogistics(w); assert.equal(w.entities.get(worker,"Job")[2],JOB_STATE.READY); updateLogistics(w); assert.equal(w.entities.get(source,"Inventory")[RESOURCE.WOOD],1); assert.equal(w.entities.get(destination,"Inventory")[RESOURCE.WOOD],5);
  updateLogistics(w); assert.equal(w.entities.get(worker,"Job")[2],JOB_STATE.IDLE);
 });
+test("Fase 7: cadeia automática armazém → agente → produção é integrada no Worker",()=>{
+ const memory=createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES));
+ const core=new SimulationCore(memory);
+ const warehouse=2,sawmill=3;
+ core.world.entities.get(warehouse,"Inventory")[RESOURCE.WOOD]=2;
+ assert.equal(core.world.queueProduction(sawmill,"SAWMILL_PLANKS").ok,true);
+ assert.equal(core.world.productionJobs.get(sawmill).state,"waiting-input");
+
+ core.tick();
+ assert.equal(core.world.logisticsRequests.size,1);
+ assert.equal(core.world.logisticsRequests.get(1).status,"assigned");
+
+ core.tick();
+ assert.equal(core.world.logisticsTasks.size,1);
+ core.tick();
+ assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.WOOD],2);
+
+ for(let i=0;i<30;i+=1) core.tick();
+ assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.WOOD],0);
+ assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.PLANKS],1);
+ assert.ok(core.world.events.some(event=>event.type==="productionCompleted") || core.world.metrics.produced===1);
+});
+
 test("Fase 7: logística rejeita estoque insuficiente",()=>{const w=world();const result=w.createLogisticsTask({workerId:5,sourceId:2,destinationId:3,resource:RESOURCE.WOOD,quantity:1});assert.equal(result.ok,false);assert.equal(result.reason,"insufficient-stock");});
 test("Fase 7: serviços econômicos funcionam sobre SharedArrayBuffer",()=>{
  const memory=createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES)); const core=new SimulationCore(memory); core.world.entities.get(2,"Inventory")[RESOURCE.WOOD]=20; core.world.entities.get(2,"Inventory")[RESOURCE.STONE]=10;
