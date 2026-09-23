@@ -36,14 +36,12 @@ export function createSimulationBridge() {
         buffer: sharedMemory,
         layout: memoryView.layout
       });
-
       worker.postMessage({ type: "start" });
       running = true;
     },
 
     stop() {
       if (!worker) return;
-
       worker.postMessage({ type: "stop" });
       worker.terminate();
       worker = null;
@@ -53,21 +51,10 @@ export function createSimulationBridge() {
       snapshot = Object.freeze({ tick: 0 });
     },
 
-    getSnapshot() {
-      return snapshot;
-    },
-
-    getMemoryView() {
-      return memoryView;
-    },
-
-    getMemoryLayout() {
-      return memoryView?.layout ?? null;
-    },
-
-    getSharedMemory() {
-      return sharedMemory;
-    },
+    getSnapshot() { return snapshot; },
+    getMemoryView() { return memoryView; },
+    getMemoryLayout() { return memoryView?.layout ?? null; },
+    getSharedMemory() { return sharedMemory; },
 
     get tickRate() {
       return SIMULATION.TARGET_TICKS_PER_SECOND;
