@@ -11,5 +11,12 @@ precision highp float;
 in float v_height;
 in vec3 v_normal;
 out vec4 outColor;
-void main(){vec3 low=vec3(.15,.30,.07),mid=vec3(.30,.56,.12),high=vec3(.48,.70,.20);float h=clamp((v_height+4.0)/10.0,0.0,1.0);vec3 grass=mix(mix(low,mid,smoothstep(.05,.55,h)),high,smoothstep(.55,.95,h));vec3 lightDir=normalize(vec3(-.45,.75,.8));float light=.55+.45*max(dot(normalize(v_normal),lightDir),0.0);outColor=vec4(grass*light,1.0);}
+void main(){
+  vec3 low=vec3(.22,.48,.10),mid=vec3(.38,.72,.16),high=vec3(.58,.82,.25);
+  float h=clamp((v_height+4.0)/10.0,0.0,1.0);
+  vec3 grass=mix(mix(low,mid,smoothstep(.05,.55,h)),high,smoothstep(.55,.95,h));
+  vec3 lightDir=normalize(vec3(-.45,.85,.8));
+  float light=.72+.38*max(dot(normalize(v_normal),lightDir),0.0);
+  outColor=vec4(grass*light,1.0);
+}
 `;
