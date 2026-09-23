@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { MEMORY, MEMORY_REGION_NAMES, MEMORY_CAPACITIES, createMemoryLayout } from "../src/core/constants.js";
-import { createSharedMemory, createMemoryView, validateMemoryLayout } from "../src/core/memory.js";
+import { createLocalMemory, createMemoryView, validateMemoryLayout } from "../src/core/memory.js";
 
 test("layout possui as dez regiões previstas pela arquitetura", () => {
   const layout = createMemoryLayout();
@@ -19,25 +19,26 @@ test("layout não possui regiões sobrepostas", () => {
     previousEnd = region.end;
   }
   assert.ok(layout.totalBytes >= previousEnd);
-  assert.ok(layout.totalBytes <= MEMORY.INITIAL_BYTES);
 });
 
-test("memória padrão cria 64 MiB", () => {
-  assert.equal(createSharedMemory().byteLength, 64 * 1024 * 1024);
+test("memória padrão cria um ArrayBuffer local", () => {
+  const buffer = createLocalMemory();
+  assert.equal(buffer.byteLength, MEMORY.INITIAL_BYTES);
+  assert.equal(buffer.constructor.name, "ArrayBuffer");
 });
 
 test("tamanho abaixo do layout é rejeitado", () => {
-  assert.throws(() => createSharedMemory(MEMORY.LAYOUT.totalBytes - 1), /memória insuficiente/i);
+  assert.throws(() => createLocalMemory(MEMORY.LAYOUT.totalBytes - 1), /memória insuficiente/i);
 });
 
 test("tamanho inválido é rejeitado", () => {
-  assert.throws(() => createSharedMemory(0), /inteiro positivo/i);
-  assert.throws(() => createSharedMemory(-1), /inteiro positivo/i);
-  assert.throws(() => createSharedMemory(1.5), /inteiro positivo/i);
+  assert.throws(() => createLocalMemory(0), /inteiro positivo/i);
+  assert.throws(() => createLocalMemory(-1), /inteiro positivo/i);
+  assert.throws(() => createLocalMemory(1.5), /inteiro positivo/i);
 });
 
 test("views são mapeadas nos offsets centrais", () => {
-  const buffer = createSharedMemory();
+  const buffer = createLocalMemory();
   const view = createMemoryView(buffer);
   for (const name of MEMORY_REGION_NAMES) {
     const region = view.layout.regions[name];
@@ -46,8 +47,8 @@ test("views são mapeadas nos offsets centrais", () => {
   }
 });
 
-test("views compartilham o mesmo SharedArrayBuffer", () => {
-  const buffer = createSharedMemory();
+test("views usam o mesmo buffer local", () => {
+  const buffer = createLocalMemory();
   const view = createMemoryView(buffer);
   view.regions.states[0] = 1234;
   assert.equal(new Int32Array(buffer, view.layout.regions.states.offset, 1)[0], 1234);
