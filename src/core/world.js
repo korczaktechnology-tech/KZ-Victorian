@@ -3,7 +3,11 @@ import { EntityRegistry } from "./ecs.js";
 import { EntityType, spawnInitialEntity } from "./entities.js";
 
 export function createSimulationWorld(memory = null, capacity = MEMORY_CAPACITIES.entities) {
-  const entities = new EntityRegistry(capacity);
+  const externalData = memory?.regions ? {
+    Position: memory.regions.positions,
+    Velocity: memory.regions.velocities
+  } : {};
+  const entities = new EntityRegistry(capacity, externalData);
   const world = {
     entities,
     memory,
