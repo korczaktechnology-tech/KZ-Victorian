@@ -1,4 +1,4 @@
-export const WEBLORDS_VERSION = "0.2.0-memory";
+export const WEBLORDS_VERSION = "0.6.0-world";
 
 export const SIMULATION = Object.freeze({
   TARGET_TICKS_PER_SECOND: 30,
@@ -7,7 +7,10 @@ export const SIMULATION = Object.freeze({
 
 export const WORLD = Object.freeze({
   DEFAULT_WIDTH: 128,
-  DEFAULT_HEIGHT: 128
+  DEFAULT_HEIGHT: 128,
+  CELL_SIZE: 1,
+  MAX_WIDTH: 128,
+  MAX_HEIGHT: 128
 });
 
 export const MEMORY_CAPACITIES = Object.freeze({
@@ -55,27 +58,16 @@ export function createMemoryLayout() {
     const definition = REGION_DEFINITIONS[name];
     offset = align(offset, Math.max(8, definition.bytesPerElement));
     const byteLength = definition.length * definition.bytesPerElement;
-
     regions[name] = Object.freeze({
-      name,
-      offset,
-      byteLength,
-      length: definition.length,
-      bytesPerElement: definition.bytesPerElement,
-      end: offset + byteLength
+      name, offset, byteLength, length: definition.length,
+      bytesPerElement: definition.bytesPerElement, end: offset + byteLength
     });
-
     offset += byteLength;
   }
-
-  return Object.freeze({
-    totalBytes: align(offset, 8),
-    regions: Object.freeze(regions)
-  });
+  return Object.freeze({ totalBytes: align(offset, 8), regions: Object.freeze(regions) });
 }
 
 export const MEMORY_LAYOUT = createMemoryLayout();
-
 export const MEMORY = Object.freeze({
   INITIAL_BYTES: 64 * 1024 * 1024,
   ALIGNMENT_BYTES: 8,
