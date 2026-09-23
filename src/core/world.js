@@ -10,7 +10,7 @@ import {queueProduction} from "../systems/production.js";
 export function createSimulationWorld(memory=null,capacity=MEMORY_CAPACITIES.entities,width=WORLD.DEFAULT_WIDTH,height=WORLD.DEFAULT_HEIGHT){
  const externalData=memory?.regions?{Position:memory.regions.positions,Velocity:memory.regions.velocities}:{};
  const entities=new EntityRegistry(capacity,externalData),map=new WorldMap(width,height,memory),spatial=new SpatialPartition(width,height,1),flowFields=new FlowField(map);
- const world={entities,memory,map,spatial,flowFields,tick:0,events:[],metrics:{population:0,moving:0,lowNeeds:0,completedConstruction:0,produced:0,logistics:0,economyTransfers:0,navigationRevision:0},navigation:{activeField:null},
+ const world={entities,memory,map,spatial,flowFields,tick:0,events:[],metrics:{population:0,moving:0,lowNeeds:0,completedConstruction:0,produced:0,logistics:0,economyTransfers:0,navigationRevision:0},navigation:{activeField:null},logisticsTasks:new Map(),
  spawn(type,x=0,y=0,z=0){const id=spawnInitialEntity(world,type,x,y,z);world.syncEntityToMap(id);return id;},
  emit(type,payload=null){world.events.push({type,payload});},
  syncEntityToMap(id){if(!entities.has(id))return false;const position=entities.get(id,"Position");return position?map.syncEntity(id,entities.type(id),position):false;},
