@@ -23,24 +23,15 @@ export class Simulation {
     return this.#memory;
   }
 
-  get memory() {
-    return this.#memory;
-  }
-
-  get core() {
-    return this.#core;
-  }
-
-  get running() {
-    return this.#running;
-  }
+  get memory() { return this.#memory; }
+  get core() { return this.#core; }
+  get running() { return this.#running; }
 
   start() {
     if (!this.#memory || !this.#core) {
       throw new Error("WebLords: a memória compartilhada precisa ser inicializada antes da simulação.");
     }
     if (this.#running) return;
-
     this.#running = true;
     this.#lastTime = performance.now();
     this.#accumulator = 0;
@@ -80,24 +71,18 @@ export class Simulation {
 
     this.#applyQueuedCommands();
     const result = this.#core.tick(deltaSeconds);
-
     Atomics.store(this.#memory.regions.states, 0, result.tick);
-    self.postMessage({
-      type: "snapshot",
-      payload: {
-        tick: result.tick,
-        metrics: { ...result.metrics },
-        events: result.events.slice()
-      }
-    });
 
+    const snapshot = {
+      tick: result.tick,
+      metrics: { ...result.metrics },
+      events: result.events.slice()
+    };
+
+    self.postMessage({ type: "snapshot", payload: snapshot });
     if (result.events.length > 0) {
-      self.postMessage({
-        type: "events",
-        payload: result.events.slice()
-      });
+      self.postMessage({ type: "events", payload: result.events.slice() });
     }
-
     return result;
   }
 
@@ -105,13 +90,11 @@ export class Simulation {
     if (!this.#memory || !this.#core) {
       throw new Error("WebLords: a simulação precisa ser inicializada antes de executar um passo.");
     }
-    if (!this.#running) {
-      this.#running = true;
-      const result = this.tick(deltaSeconds);
-      this.#running = false;
-      return result;
-    }
-    return this.tick(deltaSeconds);
+    const wasRunning = this.#running;
+    if (!wasRunning) this.#running = true;
+    const result = this.tick(deltaSeconds);
+    this.#running = wasRunning;
+    return result;
   }
 
   handleCommand(command) {
@@ -122,6 +105,7 @@ export class Simulation {
       if (this.#core) {
         this.#core.world.tick = 0;
         this.#core.world.events.length = 0;
+        this.#core.world.metrics.population = 0;
         Atomics.store(this.#memory.regions.states, 0, 0);
         self.postMessage({ type: "simulation-reset" });
       }
@@ -133,7 +117,6 @@ export class Simulation {
 
   #applyQueuedCommands() {
     if (this.#commandQueue.length === 0) return;
-
     const commands = this.#commandQueue.splice(0);
     for (const command of commands) {
       this.#core.world.emit("commandReceived", {
