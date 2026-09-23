@@ -16,7 +16,8 @@ const store=createUIEventStore();
 const reporter=createErrorReporter(interfaceRoot);
 
 const ui=createGameUI(interfaceRoot,store,{
-  reset:()=>simulation.sendCommand("reset")
+  reset:()=>simulation.sendCommand("reset"),
+  buildHouse:(x,y)=>simulation.sendCommand("construction.request",{type:"house",x:Math.floor(x)+1,y:Math.floor(y),z:0})
 });
 
 simulation.onEvent(event=>store.apply(event));
