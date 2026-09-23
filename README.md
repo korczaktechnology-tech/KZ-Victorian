@@ -85,9 +85,9 @@ Objetivo: estabelecer a estrutura física e o pipeline básico do projeto.
 
 A arquitetura especifica que nenhum sistema de jogo deve depender diretamente do DOM.
 
-## 🔴 Fase 2 — Bootstrapping e memória
+## 🟢 Fase 2 — Bootstrapping e memória
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: criar e organizar a memória compartilhada utilizada pela simulação.
 
@@ -373,7 +373,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | Fase | Status |
 |---|:---:|
 | 1. Estrutura e pipeline | 🟢 |
-| 2. Bootstrapping e memória | 🔴 |
+| 2. Bootstrapping e memória | 🟢 |
 | 3. ECS e núcleo da simulação | 🔴 |
 | 4. Simulation Worker | 🔴 |
 | 5. WebGL 2.0 | 🔴 |
@@ -383,9 +383,10 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 1/10 concluídas.**  
+**Progresso das dez fases principais: 2/10 concluídas.**  
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
-**Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**
+**Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
+**Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**
 
 > A documentação arquitetural já está definida, mas documentação não é contabilizada como implementação. O status acima reflete o estado efetivamente encontrado no repositório no momento desta atualização.
 
@@ -394,7 +395,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 # Ordem oficial de execução
 
 1. 🟢 Estrutura e pipeline
-2. 🔴 Bootstrapping e memória
+2. 🟢 Bootstrapping e memória
 3. 🔴 ECS e núcleo da simulação
 4. 🔴 Simulation Worker
 5. 🔴 WebGL 2.0
@@ -414,6 +415,24 @@ Este README deve ser atualizado conforme o desenvolvimento avançar:
 
 - 🔴 → 🟡 quando a implementação da fase começar.
 - 🟡 → 🟢 somente após implementação, integração e validação.
+
+### Validação da Fase 2
+
+A Fase 2 possui validação automatizada para confirmar:
+
+- Criação do SharedArrayBuffer com capacidade inicial de 64 MiB.
+- Layout centralizado em constants.js.
+- As dez regiões previstas pela arquitetura.
+- Offsets calculados em um único ponto.
+- Ausência de sobreposição entre regiões.
+- Mapeamento das regiões em Float32Array, Int32Array e Uint8Array.
+- Validação de tamanho antes do uso.
+- Erros claros para memória insuficiente e ambiente sem SharedArrayBuffer.
+- Inicialização da memória antes do início do loop de simulação.
+- Compartilhamento do mesmo buffer entre Main Thread e Worker.
+- Documentação do mapa de memória em docs/memory-layout.md.
+
+A execução do GitHub Actions no commit de conclusão da Fase 2 deve terminar com sucesso, confirmando a validação automatizada da fase.
 
 ### Validação da Fase 1
 
