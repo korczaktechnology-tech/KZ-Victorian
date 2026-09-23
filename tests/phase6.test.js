@@ -1,115 +1,24 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createSharedMemory, createMemoryView } from "../src/core/memory.js";
-import { MEMORY } from "../src/core/constants.js";
-import { WorldMap, TerrainFlag } from "../src/world/map.js";
-import { FlowField } from "../src/world/flow-field.js";
-import { SpatialPartition } from "../src/world/spatial-partition.js";
-import { createSimulationWorld } from "../src/core/world.js";
-import { EntityType } from "../src/core/entities.js";
-import { updatePathfinding } from "../src/systems/pathfinding.js";
-import { SimulationCore } from "../src/systems/simulation-core.js";
+import {createSharedMemory,createMemoryView} from "../src/core/memory.js";
+import {MEMORY} from "../src/core/constants.js";
+import {WorldMap,TerrainFlag} from "../src/world/map.js";
+import {FlowField} from "../src/world/flow-field.js";
+import {SpatialPartition} from "../src/world/spatial-partition.js";
+import {createSimulationWorld} from "../src/core/world.js";
+import {EntityType} from "../src/core/entities.js";
+import {updatePathfinding} from "../src/systems/pathfinding.js";
+import {SimulationCore} from "../src/systems/simulation-core.js";
 
-test("Fase 6: mapa cria grade, índices e coordenadas consistentes", () => {
-  const map = new WorldMap(8, 6);
-  assert.equal(map.cells, 48);
-  assert.equal(map.index(3, 4), 35);
-  assert.deepEqual(map.coordinates(35), { x: 3, y: 4 });
-  assert.equal(map.index(-1, 0), -1);
-});
-
-test("Fase 6: terreno registra células livres, obstáculos, água e custos", () => {
-  const map = new WorldMap(4, 4);
-  map.setTerrain(1, 1, { cost: 7 });
-  assert.equal(map.isBlocked(1, 1), false);
-  assert.equal(map.getCost(1, 1), 7);
-  map.setTerrain(2, 2, { water: true });
-  assert.equal(map.isBlocked(2, 2), true);
-  map.setRoad(1, 1, true);
-  assert.equal(map.flags[map.index(1, 1) * 4] & TerrainFlag.ROAD, TerrainFlag.ROAD);
-  assert.equal(map.getCost(1, 1), 1);
-});
-
-test("Fase 6: Flow Field calcula custo e direção por célula", () => {
-  const map = new WorldMap(7, 3);
-  map.setTerrain(3, 1, { blocked: true });
-  const flow = new FlowField(map);
-  const field = flow.create("warehouse", [{ x: 6, y: 1 }]);
-  assert.ok(field);
-  const direction = flow.directionAt("warehouse", 5, 1);
-  assert.equal(direction.x, 1);
-  assert.equal(direction.y, 0);
-  assert.ok(direction.cost >= 1);
-  assert.equal(map.navigation[map.index(5, 1) * 4], 1);
-});
-
-test("Fase 6: Flow Field respeita obstáculos e não corta diagonalmente cantos bloqueados", () => {
-  const map = new WorldMap(3, 3);
-  map.setTerrain(1, 0, { blocked: true });
-  map.setTerrain(0, 1, { blocked: true });
-  const flow = new FlowField(map);
-  flow.create("target", [{ x: 2, y: 2 }]);
-  assert.equal(flow.directionAt("target", 0, 0).cost, -1);
-});
-
-test("Fase 6: Flow Fields aceitam múltiplos destinos e são reconstruíveis", () => {
-  const map = new WorldMap(8, 8);
-  const flow = new FlowField(map);
-  flow.create("group", [{ x: 7, y: 7 }, { x: 0, y: 7 }]);
-  const first = flow.get("group");
-  const revision = first.revision;
-  map.setTerrain(4, 4, { blocked: true });
-  const rebuilt = flow.rebuild("group");
-  assert.notEqual(rebuilt.revision, revision);
-  assert.equal(rebuilt.destinations.length, 2);
-});
-
-test("Fase 6: Spatial Partition localiza entidades dentro do raio", () => {
-  const partition = new SpatialPartition(10, 10, 1);
-  partition.insert(1, 1, 1);
-  partition.insert(2, 7, 7);
-  const positions = new Map([[1, [1, 1]], [2, [7, 7]]]);
-  const found = [];
-  partition.queryRadius(1, 1, 1.5, id => positions.get(id), id => found.push(id));
-  assert.deepEqual(found, [1]);
-});
-
-test("Fase 6: construção altera a navegabilidade e permite reconstruir o Flow Field", () => {
-  const world = createSimulationWorld(null, undefined, 16, 16);
-  world.bootstrap();
-  const before = world.map.navigationRevision;
-  const building = world.spawn(EntityType.HOUSE, 3, 0, 0);
-  assert.ok(world.map.revision > before);
-  world.rebuildNavigation();
-  assert.equal(world.map.navigationRevision, world.map.revision);
-  assert.equal(world.map.isBlocked(3, 0), true);
-  assert.ok(building > 0);
-});
-
-test("Fase 6: Pathfinding consulta o Flow Field e direciona entidades móveis", () => {
-  const world = createSimulationWorld(null, undefined, 16, 16);
-  world.bootstrap();
-  const id = world.spawn(EntityType.HABITANT, 1, 1, 0);
-  world.entities.get(id, "Movement")[3] = 2;
-  const directed = updatePathfinding(world);
-  assert.ok(directed >= 1);
-  const movement = world.entities.get(id, "Movement");
-  assert.ok(movement[0] !== 0 || movement[1] !== 0);
-});
-
-test("Fase 6: terreno e navegação usam o SharedArrayBuffer da arquitetura", () => {
-  const memory = createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES));
-  const world = createSimulationWorld(memory);
-  assert.equal(world.map.flags.buffer, memory.buffer);
-  assert.equal(world.map.navigation.buffer, memory.buffer);
-  assert.equal(world.map.cells, 128 * 128);
-});
-
-test("Fase 6: SimulationCore mantém navegação atualizada durante o ciclo", () => {
-  const memory = createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES));
-  const core = new SimulationCore(memory);
-  const result = core.tick();
-  assert.equal(result.tick, 1);
-  assert.ok(core.world.navigation.activeField);
-  assert.equal(core.world.map.navigationRevision, core.world.map.revision);
-});
+test("Fase 6: grade, índice e coordenadas",()=>{const m=new WorldMap(8,6);assert.equal(m.cells,48);assert.equal(m.index(3,4),35);assert.deepEqual(m.coordinates(35),{x:3,y:4});assert.equal(m.index(-1,0),-1);});
+test("Fase 6: terreno livre, obstáculo, água e custo",()=>{const m=new WorldMap(4,4);const rev=m.revision;m.setTerrain(1,1,{cost:7});assert.equal(m.getCost(1,1),7);assert.equal(m.revision,rev+1);m.setTerrain(2,2,{water:true});assert.equal(m.isBlocked(2,2),true);m.setRoad(1,1,true);assert.equal(m.flags[m.index(1,1)*4]&TerrainFlag.ROAD,TerrainFlag.ROAD);assert.equal(m.getCost(1,1),1);});
+test("Fase 6: custos do terreno ficam no SAB",()=>{const mem=createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES));const m=new WorldMap(8,8,mem);m.setTerrain(2,2,{cost:9});const base=m.index(2,2)*4;assert.equal(mem.regions.terrain[base+1],9);assert.equal(m.flags.buffer,mem.buffer);});
+test("Fase 6: Flow Field calcula custo e direção",()=>{const m=new WorldMap(7,3);m.setTerrain(3,1,{blocked:true});const f=new FlowField(m);f.create("warehouse",[{x:6,y:1}]);const d=f.directionAt("warehouse",5,1);assert.equal(d.x,1);assert.equal(d.y,0);assert.ok(d.cost>=1);assert.equal(m.navigation[m.index(5,1)*4],1);});
+test("Fase 6: Flow Field não corta cantos bloqueados",()=>{const m=new WorldMap(3,3);m.setTerrain(1,0,{blocked:true});m.setTerrain(0,1,{blocked:true});const f=new FlowField(m);f.create("target",[{x:2,y:2}]);assert.equal(f.directionAt("target",0,0).cost,-1);});
+test("Fase 6: múltiplos destinos e rebuild",()=>{const m=new WorldMap(8,8),f=new FlowField(m);f.create("group",[{x:7,y:7},{x:0,y:7}]);const rev=f.get("group").revision;m.setTerrain(4,4,{blocked:true});assert.notEqual(f.rebuild("group").revision,rev);assert.equal(f.get("group").destinations.length,2);});
+test("Fase 6: remove limpa a navegação",()=>{const m=new WorldMap(4,4),f=new FlowField(m);f.create("x",[{x:3,y:3}]);assert.equal(f.remove("x"),true);assert.equal(m.navigation.every(v=>v===0),true);assert.equal(m.navigationRevision,m.revision);});
+test("Fase 6: Spatial Partition consulta raio",()=>{const p=new SpatialPartition(10,10,1);p.insert(1,1,1);p.insert(2,7,7);const pos=new Map([[1,[1,1]],[2,[7,7]]]),found=[];p.queryRadius(1,1,1.5,id=>pos.get(id),id=>found.push(id));assert.deepEqual(found,[1]);});
+test("Fase 6: construção altera navegabilidade",()=>{const w=createSimulationWorld(null,undefined,16,16);w.bootstrap();const before=w.map.navigationRevision,id=w.spawn(EntityType.HOUSE,3,0,0);assert.ok(w.map.revision>before);w.rebuildNavigation();assert.equal(w.map.navigationRevision,w.map.revision);assert.equal(w.map.isBlocked(3,0),true);assert.ok(id>0);});
+test("Fase 6: Pathfinding consulta Flow Field",()=>{const w=createSimulationWorld(null,undefined,16,16);w.bootstrap();const id=w.spawn(EntityType.HABITANT,1,1,0);w.entities.get(id,"Movement")[3]=2;assert.ok(updatePathfinding(w)>=1);const mv=w.entities.get(id,"Movement");assert.ok(mv[0]!==0||mv[1]!==0);});
+test("Fase 6: mapa e navegação compartilham SAB",()=>{const m=createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES)),w=createSimulationWorld(m);assert.equal(w.map.flags.buffer,m.buffer);assert.equal(w.map.navigation.buffer,m.buffer);});
+test("Fase 6: SimulationCore mantém navegação atualizada",()=>{const m=createMemoryView(createSharedMemory(MEMORY.INITIAL_BYTES)),c=new SimulationCore(m),r=c.tick();assert.equal(r.tick,1);assert.ok(c.world.navigation.activeField);assert.equal(c.world.map.navigationRevision,c.world.map.revision);});
