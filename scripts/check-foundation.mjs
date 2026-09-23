@@ -16,7 +16,6 @@ const requiredFiles = [
   "src/core/ecs.js",
   "src/core/entities.js",
   "src/core/world.js",
-  "src/core/world.js",
   "src/core/simulation-bridge.js",
   "src/systems/simulation.js",
   "src/systems/population.js",
@@ -38,11 +37,9 @@ const requiredFiles = [
   "tests/phase2.test.js",
   "tests/simulation-memory.test.js",
   "tests/phase3.test.js",
-  "tests/phase3.test.js",
   "scripts/dev-server.mjs",
   "scripts/check-pipeline.mjs",
   "scripts/check-memory.mjs",
-  "scripts/check-ecs.mjs",
   "scripts/check-ecs.mjs"
 ];
 
@@ -79,6 +76,7 @@ const javascriptFiles = [
   "src/core/memory.js",
   "src/core/ecs.js",
   "src/core/entities.js",
+  "src/core/world.js",
   "src/core/simulation-bridge.js",
   "src/systems/simulation.js",
   "src/systems/population.js",
@@ -98,9 +96,12 @@ const javascriptFiles = [
   "tests/pipeline.test.js",
   "tests/memory.test.js",
   "tests/phase2.test.js",
+  "tests/phase3.test.js",
+  "src/systems/simulation-core.js",
   "scripts/check-foundation.mjs",
   "scripts/check-pipeline.mjs",
   "scripts/check-memory.mjs",
+  "scripts/check-ecs.mjs",
   "scripts/dev-server.mjs"
 ];
 
