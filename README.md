@@ -378,12 +378,12 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 4. Simulation Worker | 🟢 |
 | 5. WebGL 2.0 | 🟢 |
 | 6. Mapa e Flow Field | 🟢 |
-| 7. Construção, economia e logística | 🔴 |
+| 7. Construção, economia e logística | 🟢 |
 | 8. UI e eventos | 🔴 |
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 6/10 concluídas.**
+**Progresso das dez fases principais: 7/10 concluídas.**
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
 **Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
@@ -402,7 +402,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 4. 🟢 Simulation Worker
 5. 🟢 WebGL 2.0
 6. 🟢 Mapa e Flow Field
-7. 🔴 Construção, economia e logística
+7. 🟢 Construção, economia e logística
 8. 🔴 UI e eventos
 9. 🔴 Assets e memória
 10. 🔴 Produção, isolamento e deploy
@@ -418,7 +418,27 @@ Este README deve ser atualizado conforme o desenvolvimento avançar:
 - 🔴 → 🟡 quando a implementação da fase começar.
 - 🟡 → 🟢 somente após implementação, integração e validação.
 
-### Validação da Fase 6
+
+### Validação da Fase 7
+
+A Fase 7 possui validação automatizada para confirmar:
+
+- Construção condicionada à célula válida e ao estoque disponível.
+- Consumo de materiais de construção a partir do armazém.
+- Atualização da navegabilidade e reconstrução do Flow Field.
+- Estoques de madeira, tábuas, comida e pedra.
+- Transferências de inventário com validação de saldo.
+- Receitas de produção e conversão de insumos em produtos.
+- Tarefas logísticas com origem, destino, recurso e quantidade.
+- Ciclo de tarefa ASSIGNED → READY → COMPLETED → IDLE.
+- Eventos de estoque, construção, produção e logística.
+- Comandos Main Thread → Worker → validação do mundo.
+- Comandos aceitos e rejeitados sem alteração indevida do estado.
+- Regiões economy e logistics do SharedArrayBuffer.
+- Testes automatizados e verificador estrutural específico da fase.
+
+A Fase 7 é considerada concluída após a execução bem-sucedida do GitHub Actions no commit correspondente.
+\n### Validação da Fase 6
 
 A Fase 6 possui validação automatizada para confirmar:
 
