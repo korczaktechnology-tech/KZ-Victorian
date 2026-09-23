@@ -10,7 +10,7 @@ export function createUIEventStore(){
       if(!event||typeof event.type!=="string")return false;
       const p=event.payload??{};
       if(event.type==="populationChanged")state.population=Number(p.population??state.population);
-      if(event.type==="resourceChanged"||event.type==="inventoryChanged"){const key=p.resourceName??String(p.resource??"unknown");state.resources.set(key,(state.resources.get(key)??0)+Number(p.quantity??0));}
+      if(event.type==="resourceChanged"){const key=p.resourceName??String(p.resource??"unknown");state.resources.set(key,(state.resources.get(key)??0)+Number(p.quantity??0));}
       if(event.type==="selectionChanged")state.selection=p;
       if(event.type==="worldStateChanged")state.worldState={...state.worldState,...p};
       if(["constructionCompleted","constructionStarted","taskCreated","taskCompleted","productionCompleted","commandRejected","taskFailed"].includes(event.type)){state.messages.push({type:event.type,payload:p,timestamp:Date.now()});if(state.messages.length>20)state.messages.shift();}
