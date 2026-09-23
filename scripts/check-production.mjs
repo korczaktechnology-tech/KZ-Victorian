@@ -3,5 +3,5 @@ for(const p of ["scripts/production-build.mjs","scripts/production-server.mjs","
 const workflow=await readFile(".github/workflows/production.yml","utf8");
 for(const t of ["npm run check:all","npm run build:production","production-server.mjs","browser-smoke.mjs","playwright","same-origin","require-corp","https"])if(!workflow.includes(t))throw new Error("WebLords: requisito de deploy ausente: "+t);
 const build=await readFile("scripts/production-build.mjs","utf8");
-for(const t of ["_dist","index.html","style.css","src","assets","minify"])if(!build.includes(t))throw new Error("WebLords: build de produção incompleto: "+t);
+for(const t of ["_dist","index.html","style.css","src","assets","terser","--mangle"])if(!build.includes(t))throw new Error("WebLords: build de produção incompleto: "+t);
 console.log("WebLords production check: OK — build, minificação, servidor isolado e smoke test configurados.");
