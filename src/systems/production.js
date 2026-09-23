@@ -1,18 +1,4 @@
-export function updateProduction(world) {
-  let produced = 0;
-  world.entities.query("Production", "Inventory").forEach((id) => {
-    const production = world.entities.get(id, "Production");
-    const inventory = world.entities.get(id, "Inventory");
-    const input = Math.max(0, production[0]);
-    const output = Math.max(0, production[1]);
-    const inputQty = Math.max(0, production[2]);
-    const outputQty = Math.max(0, production[3]);
-    if (input < inventory.length && output < inventory.length && inputQty > 0 && outputQty > 0 && inventory[input] >= inputQty) {
-      inventory[input] -= inputQty;
-      inventory[output] += outputQty;
-      produced += outputQty;
-    }
-  });
-  world.metrics.produced = produced;
-  return produced;
-}
+import {RESOURCE} from "./economy.js";
+export const RECIPES=Object.freeze({SAWMILL_PLANKS:Object.freeze({input:RESOURCE.WOOD,inputQty:2,output:RESOURCE.PLANKS,outputQty:1,duration:30})});
+export function queueProduction(world,entityId,recipeName){const recipe=RECIPES[recipeName],production=world.entities.get(entityId,"Production"),inventory=world.entities.get(entityId,"Inventory");if(!recipe||!production||!inventory)return{ok:false,reason:"invalid-production-request"};production[0]=recipe.input;production[1]=recipe.output;production[2]=recipe.inputQty;production[3]=recipe.outputQty;return{ok:true,recipe:recipeName};}
+export function updateProduction(world){let produced=0;world.entities.query("Production","Inventory").forEach(id=>{const p=world.entities.get(id,"Production"),i=world.entities.get(id,"Inventory");if(p[0]>=0&&p[1]>=0&&p[0]<i.length&&p[1]<i.length&&p[2]>0&&p[3]>0&&i[p[0]]>=p[2]){i[p[0]]-=p[2];i[p[1]]+=p[3];produced+=p[3];world.emit("productionCompleted",{entityId:id,input:p[0],inputQty:p[2],output:p[1],outputQty:p[3]});}});world.metrics.produced=produced;return produced;}
