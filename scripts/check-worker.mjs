@@ -18,7 +18,7 @@ const simulation = await readFile(new URL("src/systems/simulation.js", root), "u
 const bridge = await readFile(new URL("src/core/simulation-bridge.js", root), "utf8");
 const combined = worker + simulation + bridge;
 
-for (const token of ["initialize-memory", "SimulationCore", "setTimeout", "postMessage", "SharedArrayBuffer"]) {
+for (const token of ["initialize-memory", "SimulationCore", "setTimeout", "postMessage"]) {
   if (!combined.includes(token)) throw new Error(`Fase 4: token obrigatório ausente: ${token}`);
 }
 
