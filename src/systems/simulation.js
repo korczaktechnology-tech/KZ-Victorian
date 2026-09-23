@@ -1,5 +1,5 @@
 import { SIMULATION } from "../core/constants.js";
-import { createMemoryView } from "../core/memory.js";
+import { createLocalMemory, createMemoryView } from "../core/memory.js";
 import { SimulationCore } from "./simulation-core.js";
 
 export class Simulation {
@@ -13,12 +13,13 @@ export class Simulation {
   #tickInterval = SIMULATION.TICK_INTERVAL_MS;
   #maxCatchUpSteps = 5;
 
-  initializeMemory(buffer, layout) {
+  initializeMemory(byteLength) {
     this.stop();
-    this.#memory = createMemoryView(buffer, layout);
+    const buffer = createLocalMemory(byteLength);
+    this.#memory = createMemoryView(buffer);
     this.#core = new SimulationCore(this.#memory);
     this.#commandQueue.length = 0;
-    Atomics.store(this.#memory.regions.states, 0, 0);
+    this.#memory.regions.states[0] = 0;
     this.#lastTime = 0;
     this.#accumulator = 0;
     return this.#memory;
@@ -29,7 +30,7 @@ export class Simulation {
   get running() { return this.#running; }
 
   start() {
-    if (!this.#memory || !this.#core) throw new Error("WebLords: a memória compartilhada precisa ser inicializada antes da simulação.");
+    if (!this.#memory || !this.#core) throw new Error("WebLords: a memória local precisa ser inicializada antes da simulação.");
     if (this.#running) return;
     this.#running = true;
     this.#lastTime = performance.now();
@@ -47,12 +48,12 @@ export class Simulation {
   }
 
   reset() {
-    if (!this.#memory) throw new Error("WebLords: não é possível reiniciar sem memória compartilhada.");
+    if (!this.#memory) throw new Error("WebLords: não é possível reiniciar sem memória local.");
     const wasRunning = this.#running;
     this.stop();
     this.#core = new SimulationCore(this.#memory);
     this.#commandQueue.length = 0;
-    Atomics.store(this.#memory.regions.states, 0, 0);
+    this.#memory.regions.states[0] = 0;
     this.#lastTime = 0;
     this.#accumulator = 0;
     self.postMessage({ type: "simulation-reset", payload: { tick: 0 } });
@@ -79,8 +80,12 @@ export class Simulation {
     if (!this.#running || !this.#core) return null;
     const result = this.#core.tick(deltaSeconds);
     this.#applyQueuedCommands(result.events);
-    Atomics.store(this.#memory.regions.states, 0, result.tick);
-    const snapshot = { tick: result.tick, metrics: { ...result.metrics }, events: result.events.slice() };
+    this.#memory.regions.states[0] = result.tick;
+    const snapshot = {
+      tick: result.tick,
+      metrics: { ...result.metrics },
+      events: result.events.slice()
+    };
     self.postMessage({ type: "snapshot", payload: snapshot });
     if (result.events.length > 0) self.postMessage({ type: "events", payload: result.events.slice() });
     return result;
