@@ -24,11 +24,14 @@ export function createSimulationBridge() {
         }
         if (data.type === "snapshot") {
           const payload = data.payload ?? {};
+          let positions = new Float32Array();
+          if (payload.positions instanceof ArrayBuffer) positions = new Float32Array(payload.positions);
+          else if (payload.positions instanceof Float32Array) positions = payload.positions;
           snapshot = Object.freeze({
             tick: payload.tick ?? 0,
             metrics: payload.metrics ?? {},
             events: payload.events ?? [],
-            positions: payload.positions instanceof Float32Array ? payload.positions : new Float32Array(payload.positions ?? [])
+            positions
           });
           emit(stateListeners, snapshot);
           return;
@@ -49,7 +52,7 @@ export function createSimulationBridge() {
         }
       };
       worker.onerror = event => { emit(errorListeners, event.error || new Error(event.message || "Erro no Simulation Worker.")); running = false; };
-      worker.onmessageerror = event => { emit(errorListeners, new Error("WebLords: mensagem inválida recebida do Simulation Worker.")); running = false; };
+      worker.onmessageerror = () => { emit(errorListeners, new Error("WebLords: mensagem inválida recebida do Simulation Worker.")); running = false; };
       worker.postMessage({ type: "initialize" });
     },
     stop() {
