@@ -162,9 +162,9 @@ Objetivo: transferir o processamento pesado do mundo para o Worker.
 
 A referência arquitetural utiliza 30 ticks por segundo, mas essa frequência é uma referência de engenharia e deverá ser medida na prática.
 
-## 🔴 Fase 5 — WebGL 2.0
+## 🟢 Fase 5 — WebGL 2.0
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: criar o sistema de renderização gráfica.
 
@@ -376,14 +376,14 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 2. Bootstrapping e memória | 🟢 |
 | 3. ECS e núcleo da simulação | 🟢 |
 | 4. Simulation Worker | 🟢 |
-| 5. WebGL 2.0 | 🔴 |
+| 5. WebGL 2.0 | 🟢 |
 | 6. Mapa e Flow Field | 🔴 |
 | 7. Construção, economia e logística | 🔴 |
 | 8. UI e eventos | 🔴 |
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 4/10 concluídas.**
+**Progresso das dez fases principais: 5/10 concluídas.**
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
 **Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
@@ -400,7 +400,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 2. 🟢 Bootstrapping e memória
 3. 🟢 ECS e núcleo da simulação
 4. 🟢 Simulation Worker
-5. 🔴 WebGL 2.0
+5. 🟢 WebGL 2.0
 6. 🔴 Mapa e Flow Field
 7. 🔴 Construção, economia e logística
 8. 🔴 UI e eventos
@@ -417,6 +417,25 @@ Este README deve ser atualizado conforme o desenvolvimento avançar:
 
 - 🔴 → 🟡 quando a implementação da fase começar.
 - 🟡 → 🟢 somente após implementação, integração e validação.
+
+### Validação da Fase 5
+
+A Fase 5 possui validação automatizada para confirmar:
+
+- Contexto WebGL 2.0 obrigatório.
+- Shaders em GLSL ES 3.00.
+- Compilação e linkedição de shaders com diagnóstico de erro.
+- VBO de geometria e buffer de índices.
+- VAO e atributos de vértice.
+- Câmera com matriz de transformação e zoom.
+- Buffer de instâncias com atributos por instância.
+- `vertexAttribDivisor` para instanced rendering.
+- `drawElementsInstanced` para renderização de múltiplos objetos em uma chamada.
+- Integração do renderer à Main Thread.
+- Contagem de draw calls do renderer.
+- Testes automatizados dos componentes gráficos e verificação estrutural.
+
+A Fase 5 é considerada concluída após a execução bem-sucedida do GitHub Actions no commit correspondente.
 
 ### Validação da Fase 4
 
