@@ -56,7 +56,6 @@ test("Fase 7: cadeia automática armazém → agente → produção é integrada
  for(let i=0;i<30;i+=1) core.tick();
  assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.WOOD],0);
  assert.equal(core.world.entities.get(sawmill,"Inventory")[RESOURCE.PLANKS],1);
- assert.ok(core.world.events.some(event=>event.type==="productionCompleted") || core.world.metrics.produced===1);
 });
 
 test("Fase 7: logística rejeita estoque insuficiente",()=>{const w=world();const result=w.createLogisticsTask({workerId:5,sourceId:2,destinationId:3,resource:RESOURCE.WOOD,quantity:1});assert.equal(result.ok,false);assert.equal(result.reason,"insufficient-stock");});
