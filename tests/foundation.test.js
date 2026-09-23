@@ -11,11 +11,12 @@ test("SharedArrayBuffer é criado com o tamanho inicial configurado", () => {
 });
 
 test("createMemoryView cria visões tipadas sobre a memória", () => {
-  const buffer = createSharedMemory(64);
+  const buffer = createSharedMemory();
   const view = createMemoryView(buffer);
-  assert.equal(view.bytes.byteLength, 64);
-  assert.equal(view.int32.byteLength, 64);
-  assert.equal(view.float32.byteLength, 64);
+  assert.equal(view.buffer, buffer);
+  assert.ok(view.regions.positions instanceof Float32Array);
+  assert.ok(view.regions.states instanceof Int32Array);
+  assert.ok(view.regions.terrain instanceof Uint8Array);
 });
 
 test("createSharedMemory rejeita tamanho inválido", () => {
