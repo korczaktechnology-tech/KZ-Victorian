@@ -76,6 +76,7 @@ test("Fase 6: Spatial Partition localiza entidades dentro do raio", () => {
 
 test("Fase 6: construção altera a navegabilidade e permite reconstruir o Flow Field", () => {
   const world = createSimulationWorld(null, undefined, 16, 16);
+  world.bootstrap();
   const before = world.map.navigationRevision;
   const building = world.spawn(EntityType.HOUSE, 3, 0, 0);
   assert.ok(world.map.revision > before);
@@ -87,6 +88,7 @@ test("Fase 6: construção altera a navegabilidade e permite reconstruir o Flow 
 
 test("Fase 6: Pathfinding consulta o Flow Field e direciona entidades móveis", () => {
   const world = createSimulationWorld(null, undefined, 16, 16);
+  world.bootstrap();
   const id = world.spawn(EntityType.HABITANT, 1, 1, 0);
   world.entities.get(id, "Movement")[3] = 2;
   const directed = updatePathfinding(world);
