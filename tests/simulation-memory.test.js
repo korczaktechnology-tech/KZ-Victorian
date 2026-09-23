@@ -18,9 +18,7 @@ test("Simulation inicializa e escreve o tick na memória compartilhada", async (
     const simulation = new Simulation();
     const buffer = createSharedMemory(MEMORY.INITIAL_BYTES);
     simulation.initializeMemory(buffer, MEMORY.LAYOUT);
-    simulation.start();
-
-    await new Promise((resolve) => setTimeout(resolve, 45));
+    simulation.step();
     simulation.stop();
 
     assert.ok(messages.length >= 1);
