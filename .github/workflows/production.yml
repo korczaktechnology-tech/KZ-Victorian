@@ -34,7 +34,7 @@ jobs:
         run: npm install --no-save playwright@1.55.0
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Start isolated production server
+      - name: Start production server
         run: |
           node scripts/production-server.mjs _dist > /tmp/weblords-server.log 2>&1 &
           echo $! > /tmp/weblords-server.pid
@@ -43,7 +43,6 @@ jobs:
         run: node scripts/browser-smoke.mjs
       - name: Verify build
         run: test -f _dist/index.html && test -d _dist/src && test -d _dist/assets
-      # Production isolation contract: HTTPS (https) + Cross-Origin-Opener-Policy: same-origin + Cross-Origin-Embedder-Policy: require-corp.
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload production artifact
