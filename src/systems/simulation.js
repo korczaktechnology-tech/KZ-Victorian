@@ -2,6 +2,20 @@ import { SIMULATION } from "../core/constants.js";
 import { createLocalMemory, createMemoryView } from "../core/memory.js";
 import { SimulationCore } from "./simulation-core.js";
 
+function createRenderPositions(world) {
+  let count = 0;
+  world.entities.query("Position").forEach(() => { count += 1; });
+  const positions = new Float32Array(count * 3);
+  let cursor = 0;
+  world.entities.query("Position").forEach(id => {
+    const position = world.entities.get(id, "Position");
+    positions[cursor++] = position[0];
+    positions[cursor++] = position[1];
+    positions[cursor++] = position[2] ?? 0;
+  });
+  return positions;
+}
+
 export class Simulation {
   #running = false;
   #timer = null;
@@ -15,8 +29,7 @@ export class Simulation {
 
   initializeMemory(byteLength) {
     this.stop();
-    const buffer = createLocalMemory(byteLength);
-    this.#memory = createMemoryView(buffer);
+    this.#memory = createMemoryView(createLocalMemory(byteLength));
     this.#core = new SimulationCore(this.#memory);
     this.#commandQueue.length = 0;
     this.#memory.regions.states[0] = 0;
@@ -81,12 +94,16 @@ export class Simulation {
     const result = this.#core.tick(deltaSeconds);
     this.#applyQueuedCommands(result.events);
     this.#memory.regions.states[0] = result.tick;
+
+    const positions = createRenderPositions(this.#core.world);
     const snapshot = {
       tick: result.tick,
       metrics: { ...result.metrics },
-      events: result.events.slice()
+      events: result.events.slice(),
+      positions: positions.buffer
     };
-    self.postMessage({ type: "snapshot", payload: snapshot });
+
+    self.postMessage({ type: "snapshot", payload: snapshot }, [positions.buffer]);
     if (result.events.length > 0) self.postMessage({ type: "events", payload: result.events.slice() });
     return result;
   }
