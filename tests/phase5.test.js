@@ -6,3 +6,17 @@ test("Fase 5: instâncias limitadas",()=>{const b=new InstanceBuffer({createBuff
 test("Fase 5: culling remove objetos fora da câmera",()=>{const r=cullInstances(new Float32Array([0,0,0,100,100,0,-100,-100,0]),10,{x:0,y:0,zoom:1,aspect:1});assert.equal(r.count,1);assert.equal(r.culled,2)});
 test("Fase 5: GPU profiler expõe suporte sem mascarar ausência",()=>{const p=createGPUProfiler({getExtension:()=>null});assert.equal(p.supported,false);assert.equal(p.resolve(),0)});
 test("Fase 5: WebGL2 é obrigatório",async()=>{const{createRenderer}=await import("../src/render/renderer.js");assert.throws(()=>createRenderer({getContext:()=>null}),/WebGL 2.0 não está disponível/)});
+
+test("Fase 5: câmera possui navegação 3D, zoom e órbita",()=>{
+  const c=new Camera().setPosition(0,0).setZoom(1).setAngle(.82,0);
+  c.moveLocal(10,5);
+  assert.notEqual(c.x,0);
+  assert.notEqual(c.y,0);
+  const beforeZoom=c.zoom;
+  c.zoomBy(1.5);
+  assert.equal(c.zoom,1.5);
+  c.orbit(.1,.2);
+  assert.equal(c.pitch,.92);
+  assert.equal(c.yaw,.2);
+  assert.notEqual(c.zoom,beforeZoom);
+});
