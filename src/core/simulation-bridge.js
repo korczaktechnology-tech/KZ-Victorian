@@ -13,31 +13,25 @@ export function createSimulationBridge() {
 
   function emit(listeners, payload) {
     for (const listener of listeners) {
-      try {
-        listener(payload);
-      } catch (error) {
-        console.error("WebLords: erro em listener da Simulation Bridge.", error);
-      }
+      try { listener(payload); }
+      catch (error) { console.error("WebLords: erro em listener da Simulation Bridge.", error); }
     }
   }
 
   return {
     start() {
       if (running) return;
-
       sharedMemory = createSharedMemory(MEMORY.INITIAL_BYTES);
       memoryView = createMemoryView(sharedMemory);
       worker = new Worker(new URL("../worker.js", import.meta.url), { type: "module" });
 
       worker.onmessage = ({ data }) => {
         if (!data || typeof data.type !== "string") return;
-
         if (data.type === "memory-ready") {
           ready = true;
           worker.postMessage({ type: "start" });
           return;
         }
-
         if (data.type === "snapshot") {
           snapshot = Object.freeze({
             tick: data.payload?.tick ?? 0,
@@ -47,19 +41,15 @@ export function createSimulationBridge() {
           emit(stateListeners, snapshot);
           return;
         }
-
         if (data.type === "events") {
           emit(eventListeners, data.payload ?? []);
           return;
         }
-
-        if (data.type === "simulation-stopped") {
+        if (data.type === "simulation-stopped") running = false;
+        if (data.type === "simulation-started") running = true;
+        if (data.type === "error") {
+          console.error("WebLords: erro no Simulation Worker.", data.payload?.message);
           running = false;
-          return;
-        }
-
-        if (data.type === "simulation-started") {
-          running = true;
         }
       };
 
@@ -67,18 +57,12 @@ export function createSimulationBridge() {
         console.error("WebLords: erro no Simulation Worker.", event.error || event.message);
         running = false;
       };
-
       worker.onmessageerror = (event) => {
         console.error("WebLords: mensagem inválida recebida do Simulation Worker.", event);
         running = false;
       };
 
-      worker.postMessage({
-        type: "initialize-memory",
-        buffer: sharedMemory,
-        layout: memoryView.layout
-      });
-
+      worker.postMessage({ type: "initialize-memory", buffer: sharedMemory, layout: memoryView.layout });
       running = true;
     },
 
@@ -95,9 +79,7 @@ export function createSimulationBridge() {
     },
 
     sendCommand(type, payload = null) {
-      if (!worker || !ready) {
-        throw new Error("WebLords: Simulation Worker ainda não está pronto para receber comandos.");
-      }
+      if (!worker || !ready) throw new Error("WebLords: Simulation Worker ainda não está pronto para receber comandos.");
       worker.postMessage({ type, payload });
     },
 
@@ -119,9 +101,6 @@ export function createSimulationBridge() {
     getMemoryView() { return memoryView; },
     getMemoryLayout() { return memoryView?.layout ?? null; },
     getSharedMemory() { return sharedMemory; },
-
-    get tickRate() {
-      return SIMULATION.TARGET_TICKS_PER_SECOND;
-    }
+    get tickRate() { return SIMULATION.TARGET_TICKS_PER_SECOND; }
   };
 }
