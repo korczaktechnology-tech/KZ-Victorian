@@ -10,6 +10,7 @@ export function createSimulationBridge() {
   let memoryView = null;
   const eventListeners = new Set();
   const stateListeners = new Set();
+  const errorListeners = new Set();
 
   function emit(listeners, payload) {
     for (const listener of listeners) {
@@ -48,7 +49,9 @@ export function createSimulationBridge() {
         if (data.type === "simulation-stopped") running = false;
         if (data.type === "simulation-started") running = true;
         if (data.type === "error") {
-          console.error("WebLords: erro no Simulation Worker.", data.payload?.message);
+          const error = new Error(data.payload?.message ?? "Erro desconhecido no Simulation Worker.");
+          emit(errorListeners, error);
+          console.error("WebLords: erro no Simulation Worker.", error);
           running = false;
         }
       };
@@ -93,6 +96,12 @@ export function createSimulationBridge() {
       if (typeof listener !== "function") throw new TypeError("listener precisa ser uma função.");
       stateListeners.add(listener);
       return () => stateListeners.delete(listener);
+    },
+
+    onError(listener) {
+      if (typeof listener !== "function") throw new TypeError("listener precisa ser uma função.");
+      errorListeners.add(listener);
+      return () => errorListeners.delete(listener);
     },
 
     isReady() { return ready; },
