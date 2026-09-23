@@ -19,7 +19,8 @@ export function createSimulationWorld(memory=null,capacity=MEMORY_CAPACITIES.ent
  setFlowField(fieldId,destinations,options={}){const field=flowFields.create(fieldId,destinations,options);world.navigation.activeField=fieldId;world.metrics.navigationRevision=map.navigationRevision;world.emit("navigationUpdated",{fieldId,revision:map.navigationRevision});return field;},
  requestConstruction(type,x,y,z=0){return requestConstruction(world,type,x,y,z);},
  createLogisticsTask(payload){return createLogisticsTask(world,payload);},
- queueProduction(entityId,recipe){const result=queueProduction(world,entityId,recipe);if(result.ok)world.emit("productionQueued",{entityId,recipe});return result;}
+ queueProduction(entityId,recipe){const result=queueProduction(world,entityId,recipe);if(result.ok)world.emit("productionQueued",{entityId,recipe});return result;},
+ selectAt(x,y,radius=1.5){let selected=null;world.spatial.queryRadius(x,y,radius,id=>entities.get(id,"Position"),(id,position)=>{if(!selected)selected={entityId:id,entityType:entities.type(id),x:position[0],y:position[1],z:position[2]??0};});world.emit("selectionChanged",selected);return{ok:true,selection:selected};}
  };
  world.bootstrap=()=>{if(entities.size!==0)return;world.spawn(EntityType.HOUSE,0,0,0);world.spawn(EntityType.WAREHOUSE,4,0,0);world.spawn(EntityType.SAWMILL,8,0,0);world.spawn(EntityType.ROAD,2,0,0);world.spawn(EntityType.HABITANT,0,0,0);world.spawn(EntityType.HABITANT,1,0,0);world.spawn(EntityType.TREE,6,0,0);world.spawn(EntityType.RESOURCE,10,0,0);world.spawn(EntityType.ANIMAL,12,0,0);world.rebuildSpatial();world.setFlowField("default",[{x:2,y:0}]);};
  return world;
