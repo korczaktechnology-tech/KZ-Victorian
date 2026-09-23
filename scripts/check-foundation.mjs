@@ -15,6 +15,8 @@ const requiredFiles = [
   "src/core/memory.js",
   "src/core/ecs.js",
   "src/core/entities.js",
+  "src/core/world.js",
+  "src/core/world.js",
   "src/core/simulation-bridge.js",
   "src/systems/simulation.js",
   "src/systems/population.js",
@@ -35,9 +37,13 @@ const requiredFiles = [
   "tests/memory.test.js",
   "tests/phase2.test.js",
   "tests/simulation-memory.test.js",
+  "tests/phase3.test.js",
+  "tests/phase3.test.js",
   "scripts/dev-server.mjs",
   "scripts/check-pipeline.mjs",
-  "scripts/check-memory.mjs"
+  "scripts/check-memory.mjs",
+  "scripts/check-ecs.mjs",
+  "scripts/check-ecs.mjs"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(root, file)));
