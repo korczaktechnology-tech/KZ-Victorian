@@ -4,26 +4,26 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const read = (file) => readFile(resolve(root, file), "utf8");
+const read = file => readFile(resolve(root, file), "utf8");
 
-test("Fase 2 mantém o mapa de memória centralizado", async () => {
+test("Fase 2 mantém o mapa de memória local centralizado", async () => {
   const constants = await read("src/core/constants.js");
   const memory = await read("src/core/memory.js");
   assert.match(constants, /MEMORY_CAPACITIES/);
   assert.match(constants, /MEMORY_REGION_NAMES/);
   assert.match(constants, /createMemoryLayout/);
+  assert.match(memory, /createLocalMemory/);
   assert.match(memory, /createMemoryView/);
-  assert.match(memory, /validateMemoryLayout/);
+  assert.doesNotMatch(memory, /SharedArrayBuffer|Atomics/);
 });
 
-test("Fase 2 inicializa memória antes do loop", async () => {
+test("Fase 2 inicializa a memória dentro do Worker antes do loop", async () => {
   const bridge = await read("src/core/simulation-bridge.js");
   const simulation = await read("src/systems/simulation.js");
   const worker = await read("src/worker.js");
-  assert.match(bridge, /createSharedMemory/);
-  assert.match(bridge, /initialize-memory/);
-  assert.match(simulation, /memória compartilhada precisa ser inicializada antes/);
-  assert.match(worker, /initialize-memory/);
+  assert.match(bridge, /postMessage\(\{ type: "initialize" \}\)/);
+  assert.match(simulation, /memória local precisa ser inicializada antes/);
+  assert.match(worker, /case "initialize"/);
 });
 
 test("nenhum sistema declara offsets locais", async () => {
