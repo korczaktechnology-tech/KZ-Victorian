@@ -30,12 +30,20 @@ export class ComponentStore {
   #definitions;
   #data = new Map();
 
-  constructor(capacity, definitions = COMPONENTS) {
+  constructor(capacity, definitions = COMPONENTS, externalData = {}) {
     if (!Number.isInteger(capacity) || capacity <= 0) throw new RangeError("WebLords: capacidade do ECS inválida.");
     this.#capacity = capacity;
     this.#definitions = definitions;
     for (const [name, definition] of Object.entries(definitions)) {
-      this.#data.set(name, new definition.type(capacity * definition.fields));
+      const external = externalData[name];
+      if (external !== undefined) {
+        if (!(external instanceof definition.type) || external.length < capacity * definition.fields) {
+          throw new TypeError(`WebLords: armazenamento externo inválido para ${name}.`);
+        }
+        this.#data.set(name, external);
+      } else {
+        this.#data.set(name, new definition.type(capacity * definition.fields));
+      }
     }
   }
 
@@ -71,14 +79,14 @@ export class EntityRegistry {
   #freeCount = 0;
   #store;
 
-  constructor(capacity = 4096) {
+  constructor(capacity = 4096, externalData = {}) {
     if (!Number.isInteger(capacity) || capacity <= 0) throw new RangeError("WebLords: capacidade de entidades inválida.");
     this.#capacity = capacity;
     this.#alive = new Uint8Array(capacity);
     this.#types = new Uint8Array(capacity);
     this.#masks = new Uint32Array(capacity);
     this.#freeIds = new Uint32Array(capacity);
-    this.#store = new ComponentStore(capacity);
+    this.#store = new ComponentStore(capacity, COMPONENTS, externalData);
   }
 
   create(typeCode = 0) {
