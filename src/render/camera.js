@@ -8,7 +8,7 @@ export class Camera{
  setAngle(pitch=this.pitch,yaw=this.yaw){this.pitch=Math.max(.35,Math.min(1.35,Number(pitch)||this.pitch));this.yaw=Number.isFinite(Number(yaw))?Number(yaw):this.yaw;return this;}
  orbit(deltaPitch=0,deltaYaw=0){return this.setAngle(this.pitch+(Number(deltaPitch)||0),this.yaw+(Number(deltaYaw)||0));}
  follow(x,y){this.x=Number(x)||0;this.y=Number(y)||0;return this;}
- getView(aspect=1){return Object.freeze({x:this.x,y:this.y,zoom:this.zoom,aspect:Math.max(.0001,aspect),pitch:this.pitch,yaw:this.yaw,height:this.height,fov:this.fov});}
+ getMatrix(aspect=1){const sx=this.zoom/Math.max(aspect,.0001),sy=this.zoom;return new Float32Array([sx,0,0,0,sy,0,-this.x*sx,-this.y*sy,0,0,1,0]);}\n getView(aspect=1){return Object.freeze({x:this.x,y:this.y,zoom:this.zoom,aspect:Math.max(.0001,aspect),pitch:this.pitch,yaw:this.yaw,height:this.height,fov:this.fov});}
  getBillboardBasis(){return Object.freeze({right:new Float32Array([Math.cos(this.yaw),0,Math.sin(this.yaw)]),up:new Float32Array([0,1,0])});}
  getViewProjection(aspect=1){
   const a=Math.max(.0001,aspect),distance=this.height/this.zoom,cp=Math.cos(this.pitch),sp=Math.sin(this.pitch),cy=Math.cos(this.yaw),sy=Math.sin(this.yaw);
