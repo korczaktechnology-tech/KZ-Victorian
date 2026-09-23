@@ -1,10 +1,8 @@
-import { SIMULATION, MEMORY } from "./constants.js";
-import { createMemoryView, createSharedMemory } from "./memory.js";
+import { SIMULATION } from "./constants.js";
 
 export function createSimulationBridge() {
   let worker = null, running = false, ready = false;
-  let snapshot = Object.freeze({ tick: 0, metrics: {}, events: [] });
-  let sharedMemory = null, memoryView = null;
+  let snapshot = Object.freeze({ tick: 0, metrics: {}, events: [], positions: new Float32Array() });
   const eventListeners = new Set(), stateListeners = new Set(), errorListeners = new Set();
 
   function emit(listeners, payload) {
@@ -16,39 +14,50 @@ export function createSimulationBridge() {
   return {
     start() {
       if (worker) return;
-      sharedMemory = createSharedMemory(MEMORY.INITIAL_BYTES);
-      memoryView = createMemoryView(sharedMemory);
       worker = new Worker(new URL("../worker.js", import.meta.url), { type: "module" });
       worker.onmessage = ({ data }) => {
         if (!data || typeof data.type !== "string") return;
-        if (data.type === "memory-ready") { ready = true; worker.postMessage({ type: "start" }); return; }
+        if (data.type === "simulation-ready") {
+          ready = true;
+          worker.postMessage({ type: "start" });
+          return;
+        }
         if (data.type === "snapshot") {
-          snapshot = Object.freeze({ tick: data.payload?.tick ?? 0, metrics: data.payload?.metrics ?? {}, events: data.payload?.events ?? [] });
-          emit(stateListeners, snapshot); return;
+          const payload = data.payload ?? {};
+          snapshot = Object.freeze({
+            tick: payload.tick ?? 0,
+            metrics: payload.metrics ?? {},
+            events: payload.events ?? [],
+            positions: payload.positions instanceof Float32Array ? payload.positions : new Float32Array(payload.positions ?? [])
+          });
+          emit(stateListeners, snapshot);
+          return;
         }
         if (data.type === "events") { emit(eventListeners, data.payload ?? []); return; }
         if (data.type === "simulation-started") { running = true; return; }
         if (data.type === "simulation-stopped") { running = false; return; }
         if (data.type === "simulation-reset") {
-          snapshot = Object.freeze({ tick: 0, metrics: {}, events: [] });
+          snapshot = Object.freeze({ tick: 0, metrics: {}, events: [], positions: new Float32Array() });
           emit(stateListeners, snapshot);
           emit(eventListeners, [{ type: "worldStateChanged", payload: { tick: 0, reset: true } }]);
           return;
         }
         if (data.type === "error") {
           const error = new Error(data.payload?.message ?? "Erro desconhecido no Simulation Worker.");
-          emit(errorListeners, error); console.error("WebLords: erro no Simulation Worker.", error); running = false;
+          emit(errorListeners, error);
+          running = false;
         }
       };
-      worker.onerror = (event) => { console.error("WebLords: erro no Simulation Worker.", event.error || event.message); running = false; };
-      worker.onmessageerror = (event) => { console.error("WebLords: mensagem inválida recebida do Simulation Worker.", event); running = false; };
-      worker.postMessage({ type: "initialize-memory", buffer: sharedMemory, layout: memoryView.layout });
+      worker.onerror = event => { emit(errorListeners, event.error || new Error(event.message || "Erro no Simulation Worker.")); running = false; };
+      worker.onmessageerror = event => { emit(errorListeners, new Error("WebLords: mensagem inválida recebida do Simulation Worker.")); running = false; };
+      worker.postMessage({ type: "initialize" });
     },
     stop() {
       if (!worker) return;
-      worker.postMessage({ type: "stop" }); worker.terminate();
-      worker = null; running = false; ready = false; sharedMemory = null; memoryView = null;
-      snapshot = Object.freeze({ tick: 0, metrics: {}, events: [] });
+      worker.postMessage({ type: "stop" });
+      worker.terminate();
+      worker = null; running = false; ready = false;
+      snapshot = Object.freeze({ tick: 0, metrics: {}, events: [], positions: new Float32Array() });
     },
     sendCommand(type, payload = null) {
       if (!worker || !ready) throw new Error("WebLords: Simulation Worker ainda não está pronto para receber comandos.");
@@ -60,9 +69,9 @@ export function createSimulationBridge() {
     isReady() { return ready; },
     isRunning() { return running; },
     getSnapshot() { return snapshot; },
-    getMemoryView() { return memoryView; },
-    getMemoryLayout() { return memoryView?.layout ?? null; },
-    getSharedMemory() { return sharedMemory; },
+    getMemoryView() { return null; },
+    getMemoryLayout() { return null; },
+    getSharedMemory() { return null; },
     get tickRate() { return SIMULATION.TARGET_TICKS_PER_SECOND; }
   };
 }
