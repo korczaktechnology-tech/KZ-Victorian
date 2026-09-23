@@ -1,4 +1,4 @@
-import {createSharedMemory,createMemoryView} from "../src/core/memory.js";
+import {createLocalMemory,createMemoryView} from "../src/core/memory.js";
 import {Component,componentNamesList,EntityRegistry} from "../src/core/ecs.js";
 import {EntityType,EntityTypeCode} from "../src/core/entities.js";
 import {SimulationCore,SIMULATION_SYSTEM_ORDER} from "../src/systems/simulation-core.js";
@@ -8,11 +8,11 @@ const expectedTypes=["habitant","tree","house","warehouse","sawmill","road","res
 if(JSON.stringify(componentNamesList)!==JSON.stringify(expectedComponents))throw new Error("WebLords ECS check: componentes fora da especificação.");
 if(JSON.stringify(Object.values(EntityType))!==JSON.stringify(expectedTypes))throw new Error("WebLords ECS check: entidades fora da especificação.");
 if(Object.keys(Component).length!==9)throw new Error("WebLords ECS check: quantidade de componentes inválida.");
-const memory=createMemoryView(createSharedMemory()),core=new SimulationCore(memory,MEMORY_CAPACITIES.entities);
+const memory=createMemoryView(createLocalMemory()),core=new SimulationCore(memory,MEMORY_CAPACITIES.entities);
 if(core.world.entities.size!==9)throw new Error("WebLords ECS check: bootstrap incompleto.");
 const result=core.tick();
 if(JSON.stringify(result.systemTrace)!==JSON.stringify(SIMULATION_SYSTEM_ORDER))throw new Error("WebLords ECS check: ordem/execução dos oito sistemas inválida.");
-if(result.metrics.population!==2||Atomics.load(memory.regions.population,0)!==2)throw new Error("WebLords ECS check: população não sincronizada.");
+if(result.metrics.population!==2||memory.regions.population[0]!==2)throw new Error("WebLords ECS check: população não sincronizada.");
 const registry=new EntityRegistry(2),id=registry.create();registry.add(id,Component.POSITION,[1,2,3]);if(!registry.hasComponent(id,Component.POSITION))throw new Error("WebLords ECS check: componente não registrado.");
 if(registry.get(id,Component.POSITION)[0]!==1)throw new Error("WebLords ECS check: armazenamento inválido.");
 if(SIMULATION_SYSTEM_ORDER.length!==8)throw new Error("WebLords ECS check: ordem incompleta.");
