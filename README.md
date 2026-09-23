@@ -558,12 +558,12 @@ A revisão consolidada reforça os critérios de conclusão dessas fases:
 
 A marcação 🟢 continua condicionada à execução bem-sucedida do CI e da validação de produção no commit correspondente.
 
-## Migração de transporte — SharedArrayBuffer removido
+## Migração de transporte — modelo anterior de memória compartilhada removido
 
-O modelo anterior baseado em SharedArrayBuffer foi retirado para manter o frontend integralmente compatível com GitHub Pages. O estado autoritativo agora permanece no Simulation Worker. A Main Thread envia comandos por postMessage e recebe snapshots compactos de renderização por ArrayBuffer transferível, além de eventos estruturados.
+O modelo anterior baseado em modelo anterior de memória compartilhada foi retirado para manter o frontend integralmente compatível com GitHub Pages. O estado autoritativo agora permanece no Simulation Worker. A Main Thread envia comandos por postMessage e recebe snapshots compactos de renderização por ArrayBuffer transferível, além de eventos estruturados.
 
 A migração está organizada em três etapas:
 
-- **Etapa 0 — Preparação e fundação:** substituição da memória compartilhada por ArrayBuffer local e remoção das dependências de Atomics.
+- **Etapa 0 — Preparação e fundação:** substituição da memória compartilhada por ArrayBuffer local e remoção das dependências de operações atômicas do modelo anterior.
 - **Etapa 1 — Rascunho:** novo protocolo Main Thread ↔ Worker, snapshots transferíveis e manutenção do timestep fixo.
 - **Etapa 2 — Compleição:** atualização de testes, validadores, documentação, runtime, smoke test e deploy para GitHub Pages sem COOP/COEP.
