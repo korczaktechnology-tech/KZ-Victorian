@@ -32,7 +32,7 @@ test("Fase 7: armazém gera pedido e logística busca agente próximo",()=>{
 });
 test("Fase 7: logística percorre ciclo completo de tarefa",()=>{
  const w=world(),worker=5,source=2,destination=3; w.entities.get(source,"Inventory")[RESOURCE.WOOD]=6;
- const task=w.createLogisticsTask({workerId,sourceId:source,destinationId:destination,resource:RESOURCE.WOOD,quantity:5}); assert.equal(task.ok,true);
+ const task=w.createLogisticsTask({workerId:worker,sourceId:source,destinationId:destination,resource:RESOURCE.WOOD,quantity:5}); assert.equal(task.ok,true);
  updateLogistics(w); assert.equal(w.entities.get(worker,"Job")[2],JOB_STATE.READY); updateLogistics(w); assert.equal(w.entities.get(source,"Inventory")[RESOURCE.WOOD],1); assert.equal(w.entities.get(destination,"Inventory")[RESOURCE.WOOD],5);
  updateLogistics(w); assert.equal(w.entities.get(worker,"Job")[2],JOB_STATE.IDLE);
 });
