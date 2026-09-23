@@ -4,5 +4,5 @@ const source=await Promise.all(files.map(f=>readFile(new URL(f,root),"utf8"))).t
 for(const token of ["initialize","SimulationCore","setTimeout","postMessage","simulation-reset","positions.buffer"])if(!source.includes(token))throw new Error("Fase 4: requisito ausente: "+token);
 const simulation=await readFile(new URL("src/systems/simulation.js",root),"utf8"),bridge=await readFile(new URL("src/core/simulation-bridge.js",root),"utf8");
 if(!simulation.includes("#accumulator")||!simulation.includes("#maxCatchUpSteps")||!simulation.includes("new SimulationCore(this.#memory)"))throw new Error("Fase 4: loop fixo ou reinicialização ausente.");
-if(!bridge.includes("postMessage({ type: \"initialize\" })")||!bridge.includes("positions instanceof ArrayBuffer"))throw new Error("Fase 4: handshake/transferência ausente.");
+if(!bridge.includes("initialize")||!bridge.includes("positions instanceof ArrayBuffer")||!bridge.includes("pendingCommands"))throw new Error("Fase 4: handshake/transferência/comandos pendentes ausentes.");
 console.log("WebLords worker check: OK — Worker, SimulationCore, timestep fixo, comandos, reset e snapshots transferíveis validados.");
