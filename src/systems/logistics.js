@@ -1,16 +1,4 @@
-export function updateLogistics(world) {
-  let tasks = 0;
-  world.entities.query("Job", "Inventory", "Position").forEach((id) => {
-    const job = world.entities.get(id, "Job");
-    const inventory = world.entities.get(id, "Inventory");
-    if (job[1] === 2) {
-      inventory[0] += 1;
-      job[1] = 0;
-      tasks += 1;
-      world.emit("taskCompleted", { entityId: id });
-    }
-  });
-  if (world.memory?.regions.logistics) Atomics.store(world.memory.regions.logistics, 0, tasks);
-  world.metrics.logistics = tasks;
-  return tasks;
-}
+export const JOB_STATE=Object.freeze({IDLE:0,ASSIGNED:1,READY:2,COMPLETED:3});
+export const JOB_TYPE=Object.freeze({DELIVERY:1,SUPPLY:2,CONSTRUCTION:3});
+export function createLogisticsTask(world,{workerId,sourceId,destinationId,resource,quantity}){if(![workerId,sourceId,destinationId].every(id=>world.entities.has(id)))return{ok:false,reason:"entity-not-found"};if(![resource,quantity].every(Number.isInteger)||resource<0||resource>3||quantity<=0)return{ok:false,reason:"invalid-task"};const job=world.entities.get(workerId,"Job");if(!job||job[2]!==JOB_STATE.IDLE)return{ok:false,reason:"worker-busy"};job[0]=destinationId;job[1]=resource;job[2]=JOB_STATE.ASSIGNED;world.emit("taskCreated",{workerId,sourceId,destinationId,resource,quantity});return{ok:true,workerId,sourceId,destinationId,resource,quantity};}
+export function updateLogistics(world){let tasks=0;world.entities.query("Job","Inventory","Position").forEach(id=>{const job=world.entities.get(id,"Job");if(job[2]===JOB_STATE.ASSIGNED){job[2]=JOB_STATE.READY;world.emit("taskReady",{entityId:id,targetId:job[0]});}else if(job[2]===JOB_STATE.READY){job[2]=JOB_STATE.COMPLETED;}else if(job[2]===JOB_STATE.COMPLETED){job[2]=JOB_STATE.IDLE;tasks+=1;world.emit("taskCompleted",{entityId:id,targetId:job[0]});}});if(world.memory?.regions.logistics)Atomics.store(world.memory.regions.logistics,0,tasks);world.metrics.logistics=tasks;return tasks;}
