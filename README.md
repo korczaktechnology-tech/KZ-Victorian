@@ -1,1 +1,382 @@
-# KZ-Victorian
+# WebLords
+
+## Status geral do projeto
+
+**Estado atual: 🟡 Em andamento**
+
+O WebLords é uma aplicação web de simulação e estratégia em tempo real, planejada para navegador moderno com WebGL 2.0. A arquitetura de referência define uma separação entre **Main Thread**, **Simulation Worker**, **SharedArrayBuffer** e uma simulação orientada a **ECS (Entity Component System)**.
+
+> **Legenda**
+>
+> 🔴 **Não implementada** — a fase ainda não está implementada no repositório.
+>
+> 🟡 **Em andamento** — existem trabalhos, preparação ou implementação parcial relacionados à fase.
+>
+> 🟢 **Concluída** — a fase foi implementada, integrada e validada.
+
+### Estado verificado do repositório
+
+No momento desta atualização, o repositório contém apenas a documentação inicial do projeto (README.md). Portanto, **não há evidência no código do repositório de que alguma das dez fases de implementação já tenha sido concluída**.
+
+A arquitetura completa estabelece que o WebLords só deve ser considerado concluído quando as dez fases estiverem implementadas, integradas e validadas. [Arquitetura de referência]
+
+---
+
+# Roadmap de implementação
+
+## 🔴 Fase 1 — Estrutura e pipeline
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: estabelecer a estrutura física e o pipeline básico do projeto.
+
+### Deve conter
+- index.html como ponto de entrada.
+- style.css para a interface.
+- src/main.js para a Main Thread.
+- src/worker.js para o Simulation Worker.
+- src/core/ para a infraestrutura de dados.
+- src/systems/ para as regras de simulação.
+- src/render/ para as responsabilidades gráficas.
+- assets/ separado do código.
+- tests/ para testes.
+- docs/ para documentação.
+- scripts/ para automações auxiliares.
+- Uso de ES Modules durante o desenvolvimento.
+- Separação entre interface e regras da simulação.
+
+A arquitetura especifica que nenhum sistema de jogo deve depender diretamente do DOM.
+
+## 🔴 Fase 2 — Bootstrapping e memória
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: criar e organizar a memória compartilhada utilizada pela simulação.
+
+### Deve conter
+- Inicialização do SharedArrayBuffer.
+- Capacidade inicial de referência de 64 MB, configurável.
+- constants.js centralizando offsets e capacidades.
+- Mapeamento dos TypedArrays.
+- Regiões de memória documentadas.
+- Validação do tamanho total antes da inicialização.
+- Tratamento claro para navegadores sem suporte ao SharedArrayBuffer.
+
+O mapa de memória previsto inclui posições, velocidades, estados, população, terreno, recursos, construções, economia, logística e navegação/Flow Field.
+
+## 🔴 Fase 3 — ECS e núcleo da simulação
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: construir o núcleo de dados e regras que representam o mundo.
+
+### Entidades iniciais
+- Habitante
+- Árvore
+- Casa
+- Armazém
+- Serraria
+- Estrada
+- Recurso
+- Animal
+
+### Componentes
+- Position
+- Velocity
+- Job
+- Inventory
+- Needs
+- Building
+- Production
+- Movement
+- Health
+
+### Sistemas
+- Population
+- Movement
+- Needs
+- Economy
+- Production
+- Construction
+- Logistics
+- Pathfinding
+
+A implementação deve privilegiar estruturas de dados eficientes, loops lineares e evitar alocações repetitivas durante os ticks.
+
+## 🔴 Fase 4 — Simulation Worker
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: transferir o processamento pesado do mundo para o Worker.
+
+### Deve executar
+- Inicialização dos sistemas.
+- População.
+- Movimento.
+- Necessidades.
+- Economia.
+- Produção.
+- Tarefas.
+- Construção.
+- Navegação.
+- Atualização do SharedArrayBuffer.
+- Emissão de eventos relevantes.
+
+A referência arquitetural utiliza 30 ticks por segundo, mas essa frequência é uma referência de engenharia e deverá ser medida na prática.
+
+## 🔴 Fase 5 — WebGL 2.0
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: criar o sistema de renderização gráfica.
+
+### Deve conter
+- Contexto WebGL 2.0.
+- Shaders.
+- VBOs.
+- Índices.
+- Buffers de instância.
+- Câmera.
+- Matrizes.
+- Instanced Rendering.
+- Culling quando houver benefício mensurável.
+- Medição de draw calls.
+- Medição do tempo de GPU.
+
+A renderização deve permanecer independente da execução das regras econômicas e da simulação populacional.
+
+## 🔴 Fase 6 — Mapa e Flow Field
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: criar o sistema espacial utilizado pelo mundo e pela navegação.
+
+### Deve conter
+- Grade de terreno.
+- Representação de navegabilidade.
+- Células livres.
+- Obstáculos.
+- Estradas.
+- Custos especiais.
+- Flow Fields por destino ou grupo.
+- Consulta de direção por célula.
+- Atualização das regiões afetadas por construções.
+- Grid Spatial Partitioning para buscas espaciais.
+
+A construção de estradas deve alterar a navegação do mundo.
+
+## 🔴 Fase 7 — Construção, economia e logística
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: conectar as ações do jogador aos sistemas econômicos e logísticos do mundo.
+
+### Construção
+- Receber input da Main Thread.
+- Enviar comando ao Worker.
+- Validar o comando.
+- Alterar o mundo somente após validação.
+- Atualizar a navegação quando necessário.
+
+### Economia
+- Estoques.
+- Produção.
+- Consumo.
+- Transferências.
+
+### Logística
+- Armazéns gerando pedidos.
+- Busca de agentes disponíveis próximos.
+- Transporte.
+- Entrega.
+- Atualização de estoques.
+- Atualização de tarefas.
+
+A cadeia prevista é: **Jogador → Input → Main Thread → Comando → Worker → Validação → Alteração do mundo → Atualização da navegação → Evento → UI.**
+
+## 🔴 Fase 8 — UI e eventos
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: construir a interface que apresenta o estado do mundo sem incorporar as regras da simulação.
+
+### Interface prevista
+- Recursos.
+- População.
+- Construção.
+- Seleção.
+- Menus.
+- Mensagens.
+- Informações contextuais.
+
+### Eventos previstos
+- resourceChanged
+- populationChanged
+- constructionCompleted
+- taskCreated
+- taskCompleted
+- selectionChanged
+- worldStateChanged
+
+A UI deve reagir a eventos relevantes, evitando polling agressivo da memória compartilhada.
+
+## 🔴 Fase 9 — Assets e memória
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: organizar, otimizar e carregar os recursos gráficos e sonoros.
+
+### Formatos previstos
+- Modelos: GLB.
+- Texturas: KTX2 quando suportado.
+- Áudio: OGG quando adequado.
+- Meshopt ou Draco quando aplicável.
+
+### Estratégia de carregamento
+- Assets essenciais primeiro.
+- Conteúdo adicional sob demanda.
+- Cache controlado.
+- Descarregamento de conteúdo quando necessário.
+- Medição de RAM.
+- Medição de VRAM.
+
+A arquitetura define 15 MB como meta de otimização, e não como garantia fixa.
+
+## 🔴 Fase 10 — Produção, isolamento e deploy
+
+**Situação: 🔴 Não implementada**
+
+Objetivo: preparar o projeto para execução em produção.
+
+### Deve conter
+- Execução dos testes antes do build.
+- Minificação do JavaScript.
+- Otimização dos assets.
+- Geração da versão de produção.
+- Ambiente compatível com SharedArrayBuffer.
+- HTTPS.
+- Cross-Origin-Opener-Policy: same-origin.
+- Cross-Origin-Embedder-Policy: require-corp.
+- Verificação de recursos externos.
+- Teste da versão publicada em navegador real.
+
+---
+
+# Testes e validação
+
+**Situação geral: 🔴 Não implementada**
+
+Os testes fazem parte da conclusão do projeto e devem abranger:
+
+### Testes unitários
+- Memória
+- ECS
+- Economia
+- Pathfinding
+- Logística
+- Construção
+- Utilitários
+
+### Testes de integração
+- Main Thread ↔ Worker
+- Worker ↔ SharedArrayBuffer
+- UI ↔ Eventos
+- Input ↔ Comandos
+- Renderer ↔ Estado
+
+### Testes de desempenho
+- FPS
+- Tempo por tick
+- CPU
+- RAM
+- VRAM
+- Tempo de carregamento
+- Quantidade de entidades
+
+### Compatibilidade
+- Chrome
+- Edge
+- Firefox, quando compatível
+- Safari, quando compatível
+
+---
+
+# Critérios de desempenho
+
+| Métrica | Referência |
+|---|---:|
+| Renderização | 60 FPS |
+| Simulação | 30 ticks/s |
+| Memória | Orçamento definido |
+| Carregamento | O menor possível |
+
+Os valores devem ser medidos com ferramentas de profiling e ajustados conforme os resultados reais.
+
+---
+
+# Critérios de conclusão
+
+O WebLords **não deve ser marcado como concluído apenas porque o código foi criado**.
+
+Para uma fase receber 🟢, ela deverá estar:
+
+1. Implementada.
+2. Integrada aos sistemas relacionados.
+3. Testada.
+4. Validada no ambiente correspondente.
+5. Sem erros críticos conhecidos que impeçam seu funcionamento.
+
+O projeto completo somente será considerado concluído quando as **dez fases** estiverem implementadas, integradas e validadas.
+
+---
+
+# Progresso atual
+
+| Fase | Status |
+|---|:---:|
+| 1. Estrutura e pipeline | 🔴 |
+| 2. Bootstrapping e memória | 🔴 |
+| 3. ECS e núcleo da simulação | 🔴 |
+| 4. Simulation Worker | 🔴 |
+| 5. WebGL 2.0 | 🔴 |
+| 6. Mapa e Flow Field | 🔴 |
+| 7. Construção, economia e logística | 🔴 |
+| 8. UI e eventos | 🔴 |
+| 9. Assets e memória | 🔴 |
+| 10. Produção, isolamento e deploy | 🔴 |
+
+**Progresso de implementação verificado no repositório: 0/10 fases concluídas.**
+
+> A documentação arquitetural já está definida, mas documentação não é contabilizada como implementação. O status acima reflete o estado efetivamente encontrado no repositório no momento desta atualização.
+
+---
+
+# Ordem oficial de execução
+
+1. 🔴 Estrutura e pipeline
+2. 🔴 Bootstrapping e memória
+3. 🔴 ECS e núcleo da simulação
+4. 🔴 Simulation Worker
+5. 🔴 WebGL 2.0
+6. 🔴 Mapa e Flow Field
+7. 🔴 Construção, economia e logística
+8. 🔴 UI e eventos
+9. 🔴 Assets e memória
+10. 🔴 Produção, isolamento e deploy
+
+Essa ordem segue o roadmap definido na arquitetura do projeto.
+
+---
+
+# Atualização do status
+
+Este README deve ser atualizado conforme o desenvolvimento avançar:
+
+- 🔴 → 🟡 quando a implementação da fase começar.
+- 🟡 → 🟢 somente após implementação, integração e validação.
+- 🟡 → 🔴 caso uma implementação seja abandonada ou removida.
+- Uma fase não deve ser marcada como 🟢 apenas porque parte de seus componentes existe.
+
+**Última revisão:** Setembro de 2026  
+**Projeto:** WebLords  
+**Arquitetura de referência:** WebLords — Arquitetura Completa de Software, Engenharia e Implementação — versão 1.0.
