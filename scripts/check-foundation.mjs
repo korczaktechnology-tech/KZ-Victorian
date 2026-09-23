@@ -18,6 +18,7 @@ const requiredFiles = [
   "src/core/world.js",
   "src/core/simulation-bridge.js",
   "src/systems/simulation.js",
+  "src/systems/simulation-core.js",
   "src/systems/population.js",
   "src/systems/movement.js",
   "src/systems/needs.js",
