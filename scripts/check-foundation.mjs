@@ -32,8 +32,11 @@ const requiredFiles = [
   "src/render/instances.js",
   "tests/foundation.test.js",
   "tests/pipeline.test.js",
+  "tests/memory.test.js",
+  "tests/phase2.test.js",
   "scripts/dev-server.mjs",
-  "scripts/check-pipeline.mjs"
+  "scripts/check-pipeline.mjs",
+  "scripts/check-memory.mjs"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(root, file)));
