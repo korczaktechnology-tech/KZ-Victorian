@@ -26,7 +26,7 @@ A arquitetura completa estabelece que o WebLords só deve ser considerado conclu
 
 # Fase 0 — Fundação da aplicação
 
-**Situação: 🟢 Concluída**
+**Situação: 🟡 Implementada e em validação**
 
 A fundação inicial do WebLords foi criada no repositório. Ela estabelece a estrutura física necessária para começar a implementação das dez fases do roadmap sem ainda considerar os sistemas de jogo como concluídos.
 
@@ -49,6 +49,10 @@ A fundação inicial do WebLords foi criada no repositório. Ela estabelece a es
 - Canvas preparado para WebGL 2.0.
 - Ponte inicial entre Main Thread e Worker.
 - Worker capaz de iniciar e interromper um loop de simulação.
+- Ferramentas locais de teste e validação.
+- Servidor de desenvolvimento sem dependências externas.
+- Testes automatizados do núcleo da fundação.
+- GitHub Actions para validação automática em push e pull request.
 - Núcleo inicial preparado para receber SharedArrayBuffer, ECS e sistemas futuros.
 - Estrutura de pastas alinhada à arquitetura de referência.
 
@@ -380,7 +384,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 10. Produção, isolamento e deploy | 🔴 |
 
 **Progresso das dez fases principais: 0/10 concluídas.**  
-**Fase 0 — Fundação: 🟢 concluída.**
+**Fase 0 — Fundação: 🟡 implementada e aguardando validação automática do CI.**
 
 > A documentação arquitetural já está definida, mas documentação não é contabilizada como implementação. O status acima reflete o estado efetivamente encontrado no repositório no momento desta atualização.
 
