@@ -7,7 +7,7 @@ for(const token of ["web-lords-triangle.glb","essential","optional","Meshopt","D
 const pipeline=await readFile("src/core/asset-pipeline.js","utf8");
 for(const token of ["loadAssetCatalog","loadAssetOnDemand","preloadEssentialAssets","inspectAsset"]) if(!pipeline.includes(token)) throw new Error("WebLords: pipeline incompleto: "+token);
 const profiler=await readFile("src/core/asset-profiler.js","utf8");
-for(const token of ["performance.memory","EXT_disjoint_timer_query_webgl2","averageFrameMs"]) if(!profiler.includes(token)) throw new Error("WebLords: profiler incompleto: "+token);
+for(const token of ["performance?.memory","EXT_disjoint_timer_query_webgl2","averageFrameMs"]) if(!profiler.includes(token)) throw new Error("WebLords: profiler incompleto: "+token);
 const doc=await readFile("docs/phase9-assets-memory.md","utf8");
 for(const token of ["15 MiB","64 MiB","Meshopt","Draco","sob demanda","telemetria"]) if(!doc.includes(token)) throw new Error("WebLords: requisito documental ausente: "+token);
 console.log("WebLords assets check: OK — catálogo real, pipeline, memória, profiling e descarregamento validados.");
