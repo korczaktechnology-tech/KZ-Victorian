@@ -26,7 +26,7 @@ A arquitetura completa estabelece que o WebLords só deve ser considerado conclu
 
 # Fase 0 — Fundação da aplicação
 
-**Situação: 🟡 Implementada e em validação**
+**Situação: 🟢 Concluída**
 
 A fundação inicial do WebLords foi criada no repositório. Ela estabelece a estrutura física necessária para começar a implementação das dez fases do roadmap sem ainda considerar os sistemas de jogo como concluídos.
 
@@ -62,9 +62,9 @@ A fundação inicial do WebLords foi criada no repositório. Ela estabelece a es
 
 # Roadmap de implementação
 
-## 🔴 Fase 1 — Estrutura e pipeline
+## 🟢 Fase 1 — Estrutura e pipeline
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: estabelecer a estrutura física e o pipeline básico do projeto.
 
@@ -372,7 +372,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 
 | Fase | Status |
 |---|:---:|
-| 1. Estrutura e pipeline | 🟡 |
+| 1. Estrutura e pipeline | 🟢 |
 | 2. Bootstrapping e memória | 🔴 |
 | 3. ECS e núcleo da simulação | 🔴 |
 | 4. Simulation Worker | 🔴 |
@@ -383,8 +383,9 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 0/10 concluídas.**  
-**Fase 0 — Fundação: 🟡 implementada e aguardando validação automática do CI.**
+**Progresso das dez fases principais: 1/10 concluídas.**  
+**Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
+**Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**
 
 > A documentação arquitetural já está definida, mas documentação não é contabilizada como implementação. O status acima reflete o estado efetivamente encontrado no repositório no momento desta atualização.
 
@@ -392,7 +393,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 
 # Ordem oficial de execução
 
-1. 🟡 Estrutura e pipeline
+1. 🟢 Estrutura e pipeline
 2. 🔴 Bootstrapping e memória
 3. 🔴 ECS e núcleo da simulação
 4. 🔴 Simulation Worker
@@ -413,6 +414,21 @@ Este README deve ser atualizado conforme o desenvolvimento avançar:
 
 - 🔴 → 🟡 quando a implementação da fase começar.
 - 🟡 → 🟢 somente após implementação, integração e validação.
+
+### Validação da Fase 1
+
+A Fase 1 possui validação automatizada para confirmar:
+
+- Estrutura física exigida pela arquitetura.
+- Entrada HTML por ES Module.
+- Fluxo `index.html → Main Thread → Renderer + Simulation Bridge → Worker → Simulation`.
+- Separação entre interface/renderização e regras da simulação.
+- Ausência de dependências diretas do DOM nas camadas de simulação.
+- Tratamento de `start` e `stop` no Worker.
+- Sintaxe de todos os módulos JavaScript da fundação.
+- Testes unitários e testes específicos do pipeline.
+
+A execução do GitHub Actions no commit de conclusão da Fase 1 terminou com **sucesso**, confirmando a validação automatizada da fase.
 - 🟡 → 🔴 caso uma implementação seja abandonada ou removida.
 - Uma fase não deve ser marcada como 🟢 apenas porque parte de seus componentes existe.
 
