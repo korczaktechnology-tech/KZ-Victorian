@@ -1,4 +1,4 @@
-export const WEBLORDS_VERSION = "0.6.0-world";
+export const WEBLORDS_VERSION = "1.1.0-local-transport";
 
 export const SIMULATION = Object.freeze({
   TARGET_TICKS_PER_SECOND: 30,
@@ -53,7 +53,6 @@ const align = (value, alignment) => Math.ceil(value / alignment) * alignment;
 export function createMemoryLayout() {
   let offset = 0;
   const regions = {};
-
   for (const name of MEMORY_REGION_NAMES) {
     const definition = REGION_DEFINITIONS[name];
     offset = align(offset, Math.max(8, definition.bytesPerElement));
@@ -68,14 +67,10 @@ export function createMemoryLayout() {
 }
 
 export const MEMORY_LAYOUT = createMemoryLayout();
-export const MEMORY = Object.freeze({
-  INITIAL_BYTES: 64 * 1024 * 1024,
-  ALIGNMENT_BYTES: 8,
-  LAYOUT: MEMORY_LAYOUT
-});
 
-if (MEMORY_LAYOUT.totalBytes > MEMORY.INITIAL_BYTES) {
-  throw new Error(
-    `WebLords: o layout inicial exige ${MEMORY_LAYOUT.totalBytes} bytes, acima do orçamento de referência de ${MEMORY.INITIAL_BYTES} bytes.`
-  );
-}
+export const MEMORY = Object.freeze({
+  INITIAL_BYTES: MEMORY_LAYOUT.totalBytes,
+  ALIGNMENT_BYTES: 8,
+  LAYOUT: MEMORY_LAYOUT,
+  TRANSPORT: "structured-clone-transfer"
+});
