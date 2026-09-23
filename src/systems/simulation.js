@@ -1,12 +1,28 @@
 import { SIMULATION } from "../core/constants.js";
+import { createMemoryView } from "../core/memory.js";
 
 export class Simulation {
   #running = false;
   #timer = null;
   #tick = 0;
+  #memory = null;
+
+  initializeMemory(buffer, layout) {
+    this.#memory = createMemoryView(buffer, layout);
+    Atomics.store(new Int32Array(buffer, 0, 1), 0, 0);
+    return this.#memory;
+  }
+
+  get memory() {
+    return this.#memory;
+  }
 
   start() {
+    if (!this.#memory) {
+      throw new Error("WebLords: a memória compartilhada precisa ser inicializada antes da simulação.");
+    }
     if (this.#running) return;
+
     this.#running = true;
     this.#timer = setInterval(() => this.tick(), SIMULATION.TICK_INTERVAL_MS);
   }
@@ -18,8 +34,9 @@ export class Simulation {
   }
 
   tick() {
-    if (!this.#running) return;
+    if (!this.#running || !this.#memory) return;
     this.#tick += 1;
+    Atomics.store(this.#memory.regions.states, 0, this.#tick);
     self.postMessage({
       type: "snapshot",
       payload: { tick: this.#tick }
@@ -27,7 +44,9 @@ export class Simulation {
   }
 
   handleCommand(command) {
-    // A fila de comandos será expandida nas fases seguintes.
-    if (command?.type === "reset") this.#tick = 0;
+    if (command?.type === "reset") {
+      this.#tick = 0;
+      if (this.#memory) Atomics.store(this.#memory.regions.states, 0, 0);
+    }
   }
 }
