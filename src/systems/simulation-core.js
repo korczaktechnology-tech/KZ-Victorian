@@ -13,14 +13,18 @@ export const SIMULATION_SYSTEM_ORDER = Object.freeze([
 ]);
 
 export class SimulationCore {
-  constructor(memory = null, capacity) {
-    this.world = createSimulationWorld(memory, capacity);
+  constructor(memory = null, capacity, width, height) {
+    this.world = createSimulationWorld(memory, capacity, width, height);
     this.world.bootstrap();
   }
 
   tick(deltaSeconds = 1 / 30) {
     this.world.tick += 1;
     this.world.events.length = 0;
+    this.world.rebuildSpatial();
+    if (this.world.map.navigationRevision !== this.world.map.revision && this.world.navigation.activeField !== null) {
+      this.world.rebuildNavigation();
+    }
     updatePopulation(this.world);
     updatePathfinding(this.world);
     updateMovement(this.world, deltaSeconds);
