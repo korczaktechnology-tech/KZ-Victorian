@@ -405,7 +405,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 7. 🟢 Construção, economia e logística
 8. 🔴 UI e eventos
 9. 🟢 Assets e memória
-10. 🔴 Produção, isolamento e deploy
+10. 🟢 Produção, isolamento e deploy
 
 Essa ordem segue o roadmap definido na arquitetura do projeto.
 
