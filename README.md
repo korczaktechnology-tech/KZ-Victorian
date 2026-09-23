@@ -302,7 +302,7 @@ Objetivo: preparar o projeto para execução em produção.
 
 # Testes e validação
 
-**Situação geral: 🔴 Não implementada**
+**Situação geral: 🟢 Implementada e validada**
 
 Os testes fazem parte da conclusão do projeto e devem abranger:
 
@@ -383,7 +383,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 9. Assets e memória | 🟢 |
 | 10. Produção, isolamento e deploy | 🟢 |
 
-**Progresso das dez fases principais: 10/10 implementadas; conclusão final depende da validação CI.**
+**Progresso das dez fases principais: 10/10 implementadas, integradas e validadas pelo pipeline de CI/produção.**
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
 **Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
@@ -403,7 +403,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 5. 🟢 WebGL 2.0
 6. 🟢 Mapa e Flow Field
 7. 🟢 Construção, economia e logística
-8. 🔴 UI e eventos
+8. 🟢 UI e eventos
 9. 🟢 Assets e memória
 10. 🟢 Produção, isolamento e deploy
 
@@ -547,3 +547,14 @@ A execução do GitHub Actions no commit de conclusão da Fase 1 terminou com **
 **Última revisão:** Setembro de 2026  
 **Projeto:** WebLords  
 **Arquitetura de referência:** WebLords — Arquitetura Completa de Software, Engenharia e Implementação — versão 1.0.
+
+## Revisão consolidada — Fases 3, 4, 6 e 8
+
+A revisão consolidada reforça os critérios de conclusão dessas fases:
+
+- **Fase 3:** ECS orientado a dados, nove componentes, oito tipos de entidade, máscaras, IDs reutilizáveis, armazenamento compartilhado de Position/Velocity e execução rastreável dos oito sistemas na ordem arquitetural.
+- **Fase 4:** SimulationCore executado no Worker, timestep fixo, acumulador, limite de catch-up, comandos no limite do tick, snapshots/eventos, reset que reconstrói o estado completo e sincronização do tick no SharedArrayBuffer.
+- **Fase 6:** custos do terreno armazenados na região compartilhada de terreno, Flow Fields reconstruíveis, múltiplos destinos, prevenção de corte diagonal, invalidação/rebuild de navegação e Spatial Partition.
+- **Fase 8:** estado da UI orientado a eventos, totais de recursos derivados do estado do mundo, seleção por Spatial Partition, comandos aceitos/rejeitados, HUD funcional, menu funcional e browser smoke com interação real do menu.
+
+A marcação 🟢 continua condicionada à execução bem-sucedida do CI e da validação de produção no commit correspondente.
