@@ -1,5 +1,5 @@
 export class InstanceBuffer{
-  constructor(gl,maxInstances=4096,stride=4){
+  constructor(gl,maxInstances=4096,stride=3){
     this.gl=gl;this.maxInstances=maxInstances;this.stride=stride;
     this.data=new Float32Array(maxInstances*stride);this.buffer=gl?.createBuffer()??null;this.count=0;
   }
