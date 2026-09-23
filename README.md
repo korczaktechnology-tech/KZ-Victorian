@@ -203,9 +203,9 @@ Objetivo: criar o sistema espacial utilizado pelo mundo e pela navegação.
 
 A construção de estradas deve alterar a navegação do mundo.
 
-## 🔴 Fase 7 — Construção, economia e logística
+## 🟢 Fase 7 — Construção, economia e logística
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: conectar as ações do jogador aos sistemas econômicos e logísticos do mundo.
 
@@ -232,9 +232,9 @@ Objetivo: conectar as ações do jogador aos sistemas econômicos e logísticos 
 
 A cadeia prevista é: **Jogador → Input → Main Thread → Comando → Worker → Validação → Alteração do mundo → Atualização da navegação → Evento → UI.**
 
-## 🔴 Fase 8 — UI e eventos
+## 🟢 Fase 8 — UI e eventos
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: construir a interface que apresenta o estado do mundo sem incorporar as regras da simulação.
 
@@ -379,7 +379,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 5. WebGL 2.0 | 🟢 |
 | 6. Mapa e Flow Field | 🟢 |
 | 7. Construção, economia e logística | 🟢 |
-| 8. UI e eventos | 🔴 |
+| 8. UI e eventos | 🟢 |
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
