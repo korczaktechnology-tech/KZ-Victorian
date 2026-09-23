@@ -1,0 +1,34 @@
+import { createSimulationWorld } from "../core/world.js";
+import { updatePopulation } from "./population.js";
+import { updatePathfinding } from "./pathfinding.js";
+import { updateMovement } from "./movement.js";
+import { updateNeeds } from "./needs.js";
+import { updateEconomy } from "./economy.js";
+import { updateProduction } from "./production.js";
+import { updateConstruction } from "./construction.js";
+import { updateLogistics } from "./logistics.js";
+
+export const SIMULATION_SYSTEM_ORDER = Object.freeze([
+  "Population", "Pathfinding", "Movement", "Needs", "Economy", "Production", "Construction", "Logistics"
+]);
+
+export class SimulationCore {
+  constructor(memory = null, capacity) {
+    this.world = createSimulationWorld(memory, capacity);
+    this.world.bootstrap();
+  }
+
+  tick(deltaSeconds = 1 / 30) {
+    this.world.tick += 1;
+    this.world.events.length = 0;
+    updatePopulation(this.world);
+    updatePathfinding(this.world);
+    updateMovement(this.world, deltaSeconds);
+    updateNeeds(this.world);
+    updateEconomy(this.world);
+    updateProduction(this.world);
+    updateConstruction(this.world);
+    updateLogistics(this.world);
+    return { tick: this.world.tick, metrics: this.world.metrics, events: this.world.events };
+  }
+}
