@@ -32,7 +32,7 @@ export function createPlayerRenderer(gl,createProgram,terrainHeight){
    for(const part of buffers){
      let swing=0;if(part.limb==="leftArm")swing=Math.sin(phase)*.65;if(part.limb==="rightArm")swing=-Math.sin(phase)*.65;if(part.limb==="leftLeg")swing=-Math.sin(phase)*.65;if(part.limb==="rightLeg")swing=Math.sin(phase)*.65;
      if(player.animation==="jump"&&part.limb?.includes("Arm"))swing=part.limb==="leftArm"?.45:-.45;
-     const model=trs(p[0]+part.at[0],terrainHeight(p[0],p[1],256)+p[2]+part.at[1],p[1]+part.at[2],swing*.05,player.facing,swing,0,0,1,1,1);
+     const model=trs(p[0]+part.at[0],terrainHeight(p[0],p[1],256)+p[2]+part.at[1],p[1]+part.at[2],swing,player.facing,0,1,1,1);
      gl.bindVertexArray(vao);gl.bindBuffer(gl.ARRAY_BUFFER,part.vb);gl.enableVertexAttribArray(aPos);gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,part.nb);gl.enableVertexAttribArray(aNormal);gl.vertexAttribPointer(aNormal,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,part.ib);gl.uniformMatrix4fv(uModel,false,model);gl.uniform3fv(uColor,part.color);gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
    }
    gl.bindVertexArray(null);
