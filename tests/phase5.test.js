@@ -16,7 +16,7 @@ test("Fase 5: câmera possui navegação 3D, zoom e órbita",()=>{
   c.zoomBy(1.5);
   assert.equal(c.zoom,1.5);
   c.orbit(.1,.2);
-  assert.equal(c.pitch,.92);
-  assert.equal(c.yaw,.2);
+  assert.ok(Math.abs(c.pitch-.92)<1e-9);
+  assert.ok(Math.abs(c.yaw-.2)<1e-9);
   assert.notEqual(c.zoom,beforeZoom);
 });
