@@ -61,16 +61,29 @@ export function createLogisticsTask(world, { workerId, sourceId, destinationId, 
 }
 
 function findNearestAvailableWorker(world, destinationId) {
-  let selected = null, bestDistance = Infinity;
-  world.entities.query("Job", "Position", "Inventory").forEach(id => {
-    const job = world.entities.get(id, "Job");
-    if (job[2] !== JOB_STATE.IDLE) return;
-    const distance = distanceSq(world, id, destinationId);
-    if (distance < bestDistance) {
-      bestDistance = distance;
-      selected = id;
+  const destination = world.entities.get(destinationId, "Position");
+  if (!destination) return null;
+
+  let selected = null;
+  let bestDistance = Infinity;
+  const searchRadius = Math.hypot(world.spatial.width * world.spatial.cellSize, world.spatial.height * world.spatial.cellSize);
+
+  world.spatial.queryRadius(
+    destination[0],
+    destination[1],
+    searchRadius,
+    id => world.entities.get(id, "Position"),
+    id => {
+      const job = world.entities.get(id, "Job");
+      const inventory = world.entities.get(id, "Inventory");
+      if (!job || !inventory || job[2] !== JOB_STATE.IDLE) return;
+      const distance = distanceSq(world, id, destinationId);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        selected = id;
+      }
     }
-  });
+  );
   return selected;
 }
 
