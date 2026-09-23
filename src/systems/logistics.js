@@ -130,7 +130,7 @@ function assignPendingRequests(world) {
     const source = world.entities.get(request.sourceId, "Inventory");
     if (!source || source[request.resource] < request.quantity) continue;
     const workerId = findNearestAvailableWorker(world, request.destinationId);
-    if (workerId !== null) createLogisticsTask(world, { ...request, workerId });
+    if (workerId !== null) createLogisticsTask(world, { ...request, requestId: request.id, workerId });
   }
 }
 
