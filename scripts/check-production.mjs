@@ -1,4 +1,4 @@
 import {readFile} from "node:fs/promises";import {existsSync} from "node:fs";
-for(const p of ["scripts/production-build.mjs",".github/workflows/production.yml","docs/phase10-production.md","src/core/runtime-capabilities.js"])if(!existsSync(p))throw new Error("WebLords: requisito de produção ausente: "+p);
+for(const p of ["scripts/production-build.mjs",".github/workflows/production.yml","docs/phase10-production.md","src/core/runtime-capabilities.js","_headers"])if(!existsSync(p))throw new Error("WebLords: requisito de produção ausente: "+p);
 const workflow=await readFile(".github/workflows/production.yml","utf8");for(const t of ["npm run check:all","npm run build:production","same-origin","require-corp","https"])if(!workflow.includes(t))throw new Error("WebLords: requisito de deploy ausente: "+t);
 console.log("WebLords production check: OK — validação, build, HTTPS e isolamento cross-origin configurados.");
