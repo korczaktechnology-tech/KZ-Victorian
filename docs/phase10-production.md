@@ -16,7 +16,7 @@ A Fase 10 fecha o ciclo de engenharia do WebLords: validação completa, build d
 
 ## Compatibilidade com GitHub Pages
 
-A arquitetura não depende de SharedArrayBuffer nem de COOP/COEP. Portanto, o frontend pode permanecer como conteúdo estático no GitHub Pages.
+A arquitetura não depende de modelo anterior de memória compartilhada nem de COOP/COEP. Portanto, o frontend pode permanecer como conteúdo estático no GitHub Pages.
 
 O Simulation Worker mantém seu estado em memória local e envia comandos, eventos e snapshots por postMessage. Uma API/MongoDB, caso seja adicionada posteriormente, ficará responsável por persistência e serviços de backend, não pelo estado de cada tick local.
 
