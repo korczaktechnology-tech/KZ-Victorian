@@ -18,8 +18,5 @@ jobs:
         with:
           node-version: 20
 
-      - name: Run unit tests
-        run: npm test
-
-      - name: Run foundation check
-        run: npm run check
+      - name: Run complete validation
+        run: npm run check:all
