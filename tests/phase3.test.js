@@ -8,7 +8,7 @@ import { SimulationCore, SIMULATION_SYSTEM_ORDER } from "../src/systems/simulati
 import { updateMovement } from "../src/systems/movement.js";
 import { updateNeeds } from "../src/systems/needs.js";
 import { updateConstruction } from "../src/systems/construction.js";
-import { updateProduction } from "../src/systems/production.js";
+import { updateProduction, queueProduction } from "../src/systems/production.js";
 import { MEMORY_CAPACITIES } from "../src/core/constants.js";
 
 test("ECS declara exatamente os nove componentes arquiteturais", () => {
@@ -88,14 +88,16 @@ test("Construction conclui uma construção e emite evento", () => {
   assert.equal(world.events[0].type, "constructionCompleted");
 });
 
-test("Production consome entrada e gera saída", () => {
+test("Production respeita a duração da receita e gera saída ao concluir", () => {
   const world = createSimulationWorld();
   const id = world.spawn(EntityType.SAWMILL);
-  world.entities.add(id, Component.INVENTORY, [10, 0, 0, 0]);
-  world.entities.add(id, Component.PRODUCTION, [0, 1, 2, 3]);
-  const produced = updateProduction(world);
-  assert.equal(produced, 3);
-  assert.deepEqual([...world.entities.get(id, Component.INVENTORY)], [8, 3, 0, 0]);
+  world.entities.get(id, Component.INVENTORY)[0] = 2;
+  assert.equal(queueProduction(world, id, "SAWMILL_PLANKS").ok, true);
+  for (let i = 0; i < 29; i += 1) updateProduction(world);
+  assert.equal(world.entities.get(id, Component.INVENTORY)[1], 0);
+  updateProduction(world);
+  assert.equal(world.entities.get(id, Component.INVENTORY)[0], 0);
+  assert.equal(world.entities.get(id, Component.INVENTORY)[1], 1);
 });
 
 test("SimulationCore executa os oito sistemas na ordem definida", () => {
