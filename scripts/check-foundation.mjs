@@ -34,6 +34,7 @@ const requiredFiles = [
   "tests/pipeline.test.js",
   "tests/memory.test.js",
   "tests/phase2.test.js",
+  "tests/simulation-memory.test.js",
   "scripts/dev-server.mjs",
   "scripts/check-pipeline.mjs",
   "scripts/check-memory.mjs"
