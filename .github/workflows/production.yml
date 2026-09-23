@@ -32,6 +32,7 @@ jobs:
         run: npm run build:production
       - name: Verify build
         run: test -f _dist/index.html && test -d _dist/src && test -d _dist/assets
+      # Production isolation contract: HTTPS + Cross-Origin-Opener-Policy: same-origin + Cross-Origin-Embedder-Policy: require-corp.
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload production artifact
