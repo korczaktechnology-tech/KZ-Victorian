@@ -38,7 +38,8 @@ export class SpatialPartition {
     return this;
   }
 
-  queryRadius(x, y, radius, callback) {
+  queryRadius(x, y, radius, getPosition, callback) {
+    if (typeof getPosition !== "function" || typeof callback !== "function") throw new TypeError("WebLords: queryRadius exige getPosition e callback.");
     if (!Number.isFinite(radius) || radius < 0) throw new RangeError("WebLords: raio inválido.");
     const minX = Math.max(0, Math.floor((x - radius) / this.cellSize));
     const maxX = Math.min(this.width - 1, Math.floor((x + radius) / this.cellSize));
@@ -48,17 +49,18 @@ export class SpatialPartition {
     for (let cy = minY; cy <= maxY; cy += 1) {
       for (let cx = minX; cx <= maxX; cx += 1) {
         for (const id of this.buckets[cy * this.width + cx]) {
-          const position = entitiesPosition(callback, id);
-          if (position) {
-            const dx = position[0] - x, dy = position[1] - y;
-            if (dx * dx + dy * dy <= radiusSq) callback(id, position);
-          }
+          const position = getPosition(id);
+          if (!position) continue;
+          const dx = position[0] - x, dy = position[1] - y;
+          if (dx * dx + dy * dy <= radiusSq) callback(id, position);
         }
       }
     }
   }
-}
 
-function entitiesPosition(callback, id) {
-  return callback?.positionFor?.(id) ?? null;
+  queryCell(x, y, callback) {
+    const cell = this.cellFor(x, y);
+    if (cell < 0) return;
+    for (const id of this.buckets[cell]) callback(id);
+  }
 }
