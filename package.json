@@ -1,0 +1,15 @@
+{
+  "name": "weblords",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WebLords — simulador web de estratégia e simulação em tempo real.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check-foundation.mjs",
+    "dev": "node scripts/dev-server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
