@@ -35,7 +35,7 @@ export function createRenderer(canvas,o={}){
   const emat=gl.getUniformLocation(entityProgram,"u_viewProjection"),eright=gl.getUniformLocation(entityProgram,"u_cameraRight"),eup=gl.getUniformLocation(entityProgram,"u_cameraUp"),ecolor=gl.getUniformLocation(entityProgram,"u_color");
   if(ep<0||eip<0||eis<0||!emat||!eright||!eup||!ecolor)throw new Error("WebLords: atributos/uniformes das entidades não encontrados.");
   gl.bindVertexArray(entityVao);
-  gl.bindBuffer(gl.ARRAY_BUFFER,mesh.buffer);gl.enableVertexAttribArray(ep);gl.vertexAttribPointer(ep,2,gl.FLOAT,false,0,0);
+  gl.bindBuffer(gl.ARRAY_BUFFER,mesh.vertexBuffer);gl.enableVertexAttribArray(ep);gl.vertexAttribPointer(ep,2,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ARRAY_BUFFER,instanceBuffer.buffer);gl.enableVertexAttribArray(eip);gl.vertexAttribPointer(eip,3,gl.FLOAT,false,16,0);gl.vertexAttribDivisor(eip,1);
   gl.enableVertexAttribArray(eis);gl.vertexAttribPointer(eis,1,gl.FLOAT,false,16,12);gl.vertexAttribDivisor(eis,1);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,mesh.indexBuffer);gl.bindVertexArray(null);
