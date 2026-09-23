@@ -258,7 +258,7 @@ Objetivo: construir a interface que apresenta o estado do mundo sem incorporar a
 
 A UI deve reagir a eventos relevantes, evitando polling agressivo da memória compartilhada.
 
-## 🔴 Fase 9 — Assets e memória
+## 🟢 Fase 9 — Assets e memória
 
 **Situação: 🔴 Não implementada**
 
@@ -380,7 +380,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 6. Mapa e Flow Field | 🟢 |
 | 7. Construção, economia e logística | 🟢 |
 | 8. UI e eventos | 🟢 |
-| 9. Assets e memória | 🔴 |
+| 9. Assets e memória | 🟢 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
 **Progresso das dez fases principais: 8/10 concluídas.**
