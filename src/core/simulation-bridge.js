@@ -8,20 +8,35 @@ export function createSimulationBridge() {
   return {
     start() {
       if (running) return;
+
       worker = new Worker(new URL("../worker.js", import.meta.url), { type: "module" });
-      worker.postMessage({ type: "start" });
+
       worker.onmessage = ({ data }) => {
-        if (data?.type === "snapshot") snapshot = data.payload;
+        if (data?.type === "snapshot") {
+          snapshot = Object.freeze(data.payload);
+        }
       };
+
+      worker.onerror = (event) => {
+        console.error("WebLords: erro no Simulation Worker.", event.error || event.message);
+      };
+
+      worker.onmessageerror = (event) => {
+        console.error("WebLords: mensagem inválida recebida do Simulation Worker.", event);
+      };
+
+      worker.postMessage({ type: "start" });
       running = true;
     },
 
     stop() {
       if (!worker) return;
+
       worker.postMessage({ type: "stop" });
       worker.terminate();
       worker = null;
       running = false;
+      snapshot = Object.freeze({ tick: 0 });
     },
 
     getSnapshot() {
