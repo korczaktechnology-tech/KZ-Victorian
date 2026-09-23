@@ -19,6 +19,9 @@ Meshopt ou Draco podem ser aplicados aos modelos quando a cadeia de produção d
 
 O InstanceBuffer reutiliza o TypedArray para evitar alocações de CPU por frame quando a capacidade existente é suficiente.
 
+## Manifesto de carregamento
+O manifesto separa explicitamente assets essenciais de conteúdo opcional. A lista pode crescer sem obrigar o catálogo inteiro a ser carregado no boot; assets essenciais são o único conjunto autorizado a participar da inicialização obrigatória.
+
 ## Critérios
 - Formatos e localização validados.
 - Carregamento assíncrono.
