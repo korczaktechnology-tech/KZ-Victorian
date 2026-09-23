@@ -260,7 +260,7 @@ A UI deve reagir a eventos relevantes, evitando polling agressivo da memória co
 
 ## 🟢 Fase 9 — Assets e memória
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: organizar, otimizar e carregar os recursos gráficos e sonoros.
 
@@ -404,7 +404,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 6. 🟢 Mapa e Flow Field
 7. 🟢 Construção, economia e logística
 8. 🔴 UI e eventos
-9. 🔴 Assets e memória
+9. 🟢 Assets e memória
 10. 🔴 Produção, isolamento e deploy
 
 Essa ordem segue o roadmap definido na arquitetura do projeto.
