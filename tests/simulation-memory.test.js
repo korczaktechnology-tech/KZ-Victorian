@@ -21,11 +21,12 @@ test("Simulation inicializa e escreve o tick na memória compartilhada", async (
     simulation.step();
     simulation.stop();
 
-    assert.ok(messages.length >= 1);
-    assert.ok(messages.at(-1).payload.tick >= 1);
+    const snapshot = messages.find((message) => message.type === "snapshot");
+    assert.ok(snapshot);
+    assert.ok(snapshot.payload.tick >= 1);
     assert.equal(
       new Int32Array(buffer, MEMORY.LAYOUT.regions.states.offset, 1)[0],
-      messages.at(-1).payload.tick
+      snapshot.payload.tick
     );
   } finally {
     globalThis.self = previousSelf;
