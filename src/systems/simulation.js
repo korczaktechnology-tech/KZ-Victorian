@@ -119,10 +119,26 @@ export class Simulation {
     if (this.#commandQueue.length === 0) return;
     const commands = this.#commandQueue.splice(0);
     for (const command of commands) {
-      events.push({
-        type: "commandReceived",
-        payload: { type: command.type, payload: command.payload ?? null }
-      });
+      const payload = command.payload ?? {};
+      let result = { ok: false, reason: "unknown-command" };
+      try {
+        switch (command.type) {
+          case "construction.request":
+            result = this.#core.world.requestConstruction(payload.type, payload.x, payload.y, payload.z ?? 0);
+            break;
+          case "logistics.create":
+            result = this.#core.world.createLogisticsTask(payload);
+            break;
+          case "production.queue":
+            result = this.#core.world.queueProduction(payload.entityId, payload.recipe);
+            break;
+          default:
+            result = { ok: false, reason: "unknown-command" };
+        }
+      } catch (error) {
+        result = { ok: false, reason: error instanceof Error ? error.message : String(error) };
+      }
+      events.push({ type: result.ok ? "commandAccepted" : "commandRejected", payload: { type: command.type, result } });
     }
   }
 }
