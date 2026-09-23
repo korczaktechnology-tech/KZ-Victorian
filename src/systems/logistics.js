@@ -1,5 +1,4 @@
 import { EntityType, EntityTypeCode } from "../core/entities.js";
-import { EntityType, EntityTypeCode } from "../core/entities.js";
 import { transferInventory } from "./economy.js";
 
 export const JOB_STATE = Object.freeze({ IDLE: 0, ASSIGNED: 1, READY: 2, COMPLETED: 3 });
