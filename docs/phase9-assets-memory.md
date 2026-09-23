@@ -1,33 +1,40 @@
 # Fase 9 — Assets e memória
 
-A Fase 9 segue a arquitetura de referência: modelos em GLB, texturas em KTX2 quando suportado, áudio em OGG, compressão Meshopt ou Draco quando aplicável, carregamento dos assets essenciais primeiro, conteúdo adicional sob demanda, cache controlado e descarregamento de recursos sem referências.
+A Fase 9 implementa o pipeline de assets da arquitetura WebLords: formatos definidos, catálogo, carregamento assíncrono, cache, referências, descarregamento, orçamento, inspeção de containers e telemetria de memória/CPU/GPU.
 
-## Política de assets
+## Política
 - Modelos: GLB.
 - Texturas: KTX2.
-- Áudio: OGG quando adequado.
+- Áudio: OGG.
 - Fontes: WOFF2/WOFF.
-- A pasta pública é `assets/`.
-- Formatos fora da política são rejeitados pelo gerenciador.
+- Compressão: Meshopt ou Draco quando aplicável.
+- Pasta pública: assets/.
+- Formatos fora da política são rejeitados.
 
-## Carregamento e memória
-O carregamento é assíncrono. Assets essenciais podem ser carregados na inicialização e conteúdo adicional deve usar `load()` somente quando necessário. O gerenciador mantém cache, contagem de referências, tamanho em bytes e permite liberar entradas sem referências.
+## Catálogo real
+O manifesto contém o asset essencial real assets/models/web-lords-triangle.glb. O GLB é validado pelo pipeline antes de ser considerado carregado.
 
-O SharedArrayBuffer mantém o orçamento de referência de 64 MiB. A meta de assets é 15 MiB. Essa meta é uma referência de otimização, não uma garantia; o valor real deve ser medido em produção.
+## Carregamento
+O manager valida o caminho, baixa assincronamente, verifica o orçamento, mantém cache por caminho, conta referências e libera memória somente quando a referência chega a zero. Conteúdo opcional é carregado por loadAssetOnDemand() e não participa do boot.
 
-Meshopt ou Draco podem ser aplicados aos modelos quando a cadeia de produção demonstrar benefício. KTX2 deve ser usado para texturas compatíveis. A Fase 9 não inventa decoders no navegador: a conversão/compressão é responsabilidade do pipeline de assets.
+## Memória
+O SharedArrayBuffer permanece em 64 MiB. O alvo de assets é 15 MiB. O manager recusa um carregamento que ultrapassaria o orçamento configurado. As estatísticas expõem bytes, MiB, referências e utilização do orçamento.
 
-O InstanceBuffer reutiliza o TypedArray para evitar alocações de CPU por frame quando a capacidade existente é suficiente.
+## Profiling
+O profiler mede tempo de frame, memória JS quando performance.memory existe e disponibilidade de EXT_disjoint_timer_query_webgl2 para medição GPU. A ausência dessas APIs é registrada, não mascarada.
 
-## Manifesto de carregamento
-O manifesto separa explicitamente assets essenciais de conteúdo opcional. A lista pode crescer sem obrigar o catálogo inteiro a ser carregado no boot; assets essenciais são o único conjunto autorizado a participar da inicialização obrigatória.
+## Containers
+GLB é validado como glTF 2.0. KTX2 é validado pela assinatura e metadados principais. OGG e WOFF/WOFF2 são classificados pelo formato. Meshopt/Draco e KTX2 são decisões do pipeline de produção, não operações por frame.
 
-## Critérios
-- Formatos e localização validados.
-- Carregamento assíncrono.
-- Cache e referências.
-- Descarregamento sem referências.
-- Estatísticas de memória.
-- Orçamentos explícitos.
-- Buffer de instâncias reutilizável.
-- Testes e checker automatizados.
+## Critérios de conclusão
+- [x] formatos suportados
+- [x] asset real no catálogo
+- [x] carregamento assíncrono
+- [x] cache e referências
+- [x] descarregamento
+- [x] orçamento de memória
+- [x] inspeção de containers
+- [x] carregamento essencial
+- [x] carregamento sob demanda
+- [x] telemetria CPU/memória/GPU
+- [x] testes e checker automatizados
