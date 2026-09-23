@@ -31,7 +31,9 @@ const requiredFiles = [
   "src/render/meshes.js",
   "src/render/instances.js",
   "tests/foundation.test.js",
-  "scripts/dev-server.mjs"
+  "tests/pipeline.test.js",
+  "scripts/dev-server.mjs",
+  "scripts/check-pipeline.mjs"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(root, file)));
@@ -83,7 +85,9 @@ const javascriptFiles = [
   "src/render/meshes.js",
   "src/render/instances.js",
   "tests/foundation.test.js",
+  "tests/pipeline.test.js",
   "scripts/check-foundation.mjs",
+  "scripts/check-pipeline.mjs",
   "scripts/dev-server.mjs"
 ];
 
