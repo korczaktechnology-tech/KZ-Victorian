@@ -138,6 +138,7 @@ export class Simulation {
       } catch (error) {
         result = { ok: false, reason: error instanceof Error ? error.message : String(error) };
       }
+      events.push({ type: "commandReceived", payload: { type: command.type, payload } });
       events.push({ type: result.ok ? "commandAccepted" : "commandRejected", payload: { type: command.type, result } });
     }
   }
