@@ -89,8 +89,11 @@ const javascriptFiles = [
   "src/render/instances.js",
   "tests/foundation.test.js",
   "tests/pipeline.test.js",
+  "tests/memory.test.js",
+  "tests/phase2.test.js",
   "scripts/check-foundation.mjs",
   "scripts/check-pipeline.mjs",
+  "scripts/check-memory.mjs",
   "scripts/dev-server.mjs"
 ];
 
