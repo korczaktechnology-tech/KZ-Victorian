@@ -69,8 +69,8 @@ export class Simulation {
   tick(deltaSeconds = this.#tickInterval / 1000) {
     if (!this.#running || !this.#core) return null;
 
-    this.#applyQueuedCommands();
     const result = this.#core.tick(deltaSeconds);
+    this.#applyQueuedCommands(result.events);
     Atomics.store(this.#memory.regions.states, 0, result.tick);
 
     const snapshot = {
@@ -115,13 +115,13 @@ export class Simulation {
     this.#commandQueue.push(command);
   }
 
-  #applyQueuedCommands() {
+  #applyQueuedCommands(events) {
     if (this.#commandQueue.length === 0) return;
     const commands = this.#commandQueue.splice(0);
     for (const command of commands) {
-      this.#core.world.emit("commandReceived", {
-        type: command.type,
-        payload: command.payload ?? null
+      events.push({
+        type: "commandReceived",
+        payload: { type: command.type, payload: command.payload ?? null }
       });
     }
   }
