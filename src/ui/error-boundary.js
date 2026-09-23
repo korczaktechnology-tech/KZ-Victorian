@@ -1,0 +1,1 @@
+export function createErrorReporter(root){const report=(kind,error)=>{const message=error instanceof Error?error.message:String(error);if(root)root.textContent="WebLords — "+kind+": "+message;console.error("WebLords — "+kind+":",error);};return{report};}
