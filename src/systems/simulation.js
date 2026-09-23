@@ -9,7 +9,7 @@ export class Simulation {
 
   initializeMemory(buffer, layout) {
     this.#memory = createMemoryView(buffer, layout);
-    Atomics.store(new Int32Array(buffer, 0, 1), 0, 0);
+    Atomics.store(this.#memory.regions.states, 0, 0);
     return this.#memory;
   }
 
@@ -37,10 +37,7 @@ export class Simulation {
     if (!this.#running || !this.#memory) return;
     this.#tick += 1;
     Atomics.store(this.#memory.regions.states, 0, this.#tick);
-    self.postMessage({
-      type: "snapshot",
-      payload: { tick: this.#tick }
-    });
+    self.postMessage({ type: "snapshot", payload: { tick: this.#tick } });
   }
 
   handleCommand(command) {
