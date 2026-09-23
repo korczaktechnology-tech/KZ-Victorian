@@ -3,7 +3,7 @@ export function createInputController(canvas,{camera,sendCommand}){
  const keys=new Set();let rotating=false,pointerButton=-1,dragging=false,lastX=0,lastY=0,lastTime=performance.now();
  const onPointerDown=e=>{if(e.button!==0&&e.button!==1&&e.button!==2)return;pointerButton=e.button;rotating=e.button===1||e.button===2;dragging=false;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture?.(e.pointerId);if(rotating)e.preventDefault();};
  const onPointerMove=e=>{if(pointerButton<0)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.hypot(dx,dy)>2)dragging=true;if(rotating){camera.orbit(-dy*.006,-dx*.006);e.preventDefault();}lastX=e.clientX;lastY=e.clientY;};
- const onPointerUp=e=>{dragging=false;rotating=false;pointerButton=-1;canvas.releasePointerCapture?.(e.pointerId);};
+ const onPointerUp=e=>{if(pointerButton===0&&!dragging)sendCommand("selection.request",{x:camera.x,y:camera.y,radius:2.5});dragging=false;rotating=false;pointerButton=-1;canvas.releasePointerCapture?.(e.pointerId);};
  const onWheel=e=>{camera.zoomBy(Math.exp(-e.deltaY*.0015));e.preventDefault();};
  const onKeyDown=e=>{const k=e.key.toLowerCase();if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright","shift"," "].includes(k)){keys.add(k);e.preventDefault();}};
  const onKeyUp=e=>keys.delete(e.key.toLowerCase());
