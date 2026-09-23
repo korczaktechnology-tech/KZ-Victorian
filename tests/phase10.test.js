@@ -1,2 +1,4 @@
-import test from "node:test";import assert from "node:assert/strict";import {getRuntimeCapabilities} from "../src/core/runtime-capabilities.js";
-test("Fase 10: capacidades de runtime são expostas",()=>{const c=getRuntimeCapabilities();assert.equal(typeof c.secureContext,"boolean");assert.equal(typeof c.sharedArrayBuffer,"boolean");assert.equal(typeof c.crossOriginIsolated,"boolean");assert.equal(typeof c.webgl2Supported,"boolean");});
+import test from "node:test";
+import assert from "node:assert/strict";
+import {getRuntimeCapabilities} from "../src/core/runtime-capabilities.js";
+test("Fase 10: capacidades de runtime são expostas",()=>{const c=getRuntimeCapabilities();assert.equal(typeof c.secureContext,"boolean");assert.equal(typeof c.webWorker,"boolean");assert.equal(typeof c.transferableArrayBuffer,"boolean");assert.equal(typeof c.webgl2Supported,"boolean");});
