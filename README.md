@@ -141,9 +141,9 @@ Objetivo: construir o núcleo de dados e regras que representam o mundo.
 
 A implementação utiliza armazenamento contíguo com TypedArrays, máscaras de componentes, IDs reutilizáveis, consultas lineares e integração das posições/velocidades com as regiões correspondentes do SharedArrayBuffer. O núcleo executa os oito sistemas definidos na ordem arquitetural, sem introduzir dependência do DOM.
 
-## 🔴 Fase 4 — Simulation Worker
+## 🟢 Fase 4 — Simulation Worker
 
-**Situação: 🔴 Não implementada**
+**Situação: 🟢 Concluída**
 
 Objetivo: transferir o processamento pesado do mundo para o Worker.
 
@@ -375,7 +375,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 1. Estrutura e pipeline | 🟢 |
 | 2. Bootstrapping e memória | 🟢 |
 | 3. ECS e núcleo da simulação | 🟢 |
-| 4. Simulation Worker | 🔴 |
+| 4. Simulation Worker | 🟢 |
 | 5. WebGL 2.0 | 🔴 |
 | 6. Mapa e Flow Field | 🔴 |
 | 7. Construção, economia e logística | 🔴 |
@@ -383,11 +383,12 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 | 9. Assets e memória | 🔴 |
 | 10. Produção, isolamento e deploy | 🔴 |
 
-**Progresso das dez fases principais: 3/10 concluídas.**
+**Progresso das dez fases principais: 4/10 concluídas.**
 **Fase 0 — Fundação: 🟢 concluída e validada pelo CI.**  
 **Fase 1 — Estrutura e pipeline: 🟢 concluída e validada pelo CI.**  
 **Fase 2 — Bootstrapping e memória: 🟢 concluída e validada pelo CI.**  
-**Fase 3 — ECS e núcleo da simulação: 🟢 concluída e validada pelo CI.**
+**Fase 3 — ECS e núcleo da simulação: 🟢 concluída e validada pelo CI.**  
+**Fase 4 — Simulation Worker: 🟢 concluída e validada pelo CI.**
 
 > A documentação arquitetural já está definida, mas documentação não é contabilizada como implementação. O status acima reflete o estado efetivamente encontrado no repositório no momento desta atualização.
 
@@ -398,7 +399,7 @@ O projeto completo somente será considerado concluído quando as **dez fases** 
 1. 🟢 Estrutura e pipeline
 2. 🟢 Bootstrapping e memória
 3. 🟢 ECS e núcleo da simulação
-4. 🔴 Simulation Worker
+4. 🟢 Simulation Worker
 5. 🔴 WebGL 2.0
 6. 🔴 Mapa e Flow Field
 7. 🔴 Construção, economia e logística
@@ -416,6 +417,23 @@ Este README deve ser atualizado conforme o desenvolvimento avançar:
 
 - 🔴 → 🟡 quando a implementação da fase começar.
 - 🟡 → 🟢 somente após implementação, integração e validação.
+
+### Validação da Fase 4
+
+A Fase 4 possui validação automatizada para confirmar:
+
+- Inicialização do `SimulationCore` dentro do Simulation Worker.
+- Inicialização da memória compartilhada antes do loop.
+- Execução da simulação com referência de 30 ticks/s.
+- Loop temporal com acumulador, timestep fixo e limite de catch-up.
+- Atualização atômica do tick no SharedArrayBuffer.
+- Processamento dos oito sistemas do núcleo da simulação dentro do Worker.
+- Canal de comandos Main Thread → Worker com processamento no limite do tick.
+- Emissão de snapshots e eventos Worker → Main Thread.
+- Tratamento de reset e erros do Worker.
+- Testes automatizados e verificação estrutural específica da fase.
+
+A Fase 4 é considerada concluída após a execução bem-sucedida do GitHub Actions no commit correspondente.
 
 ### Validação da Fase 3
 
