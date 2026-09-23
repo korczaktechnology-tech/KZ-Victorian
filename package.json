@@ -7,7 +7,9 @@
   "scripts": {
     "test": "node --test",
     "check": "node scripts/check-foundation.mjs",
-    "dev": "node scripts/dev-server.mjs"
+    "dev": "node scripts/dev-server.mjs",
+    "check:pipeline": "node scripts/check-pipeline.mjs",
+    "check:all": "npm run check && npm run check:pipeline && npm test"
   },
   "engines": {
     "node": ">=20"
