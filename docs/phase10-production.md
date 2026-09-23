@@ -13,6 +13,9 @@ A Fase 10 fecha o ciclo de engenharia do WebLords: validação completa antes do
 ## Isolamento
 A aplicação expõe uma verificação de runtime para confirmar contexto seguro, SharedArrayBuffer, cross-origin isolation e WebGL 2.0. A verificação não tenta mascarar ausência de isolamento.
 
+## Headers de produção
+O arquivo `_headers` registra o contrato de produção para hosts que suportam esse formato: `Cross-Origin-Opener-Policy: same-origin` e `Cross-Origin-Embedder-Policy: require-corp`. Em hosts que não interpretam `_headers`, os mesmos cabeçalhos precisam ser configurados no servidor/CDN.
+
 ## Deploy
 O workflow de produção usa GitHub Pages como destino estático. O próprio GitHub Pages fornece HTTPS, mas a arquitetura exige que os cabeçalhos COOP/COEP sejam efetivamente verificados no ambiente publicado; se o host não fornecer esses cabeçalhos, a aplicação deve ser publicada em um host compatível com headers customizados antes de considerar SharedArrayBuffer operacional.
 
