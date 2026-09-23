@@ -1,4 +1,4 @@
-import { MEMORY, MEMORY_REGION_NAMES, createMemoryLayout } from "./constants.js";
+import { MEMORY, MEMORY_REGION_NAMES, createMemoryLayout as buildMemoryLayout } from "./constants.js";
 
 export function createSharedMemory(byteLength = MEMORY.INITIAL_BYTES) {
   if (typeof SharedArrayBuffer === "undefined") {
@@ -29,17 +29,9 @@ export function createSharedMemory(byteLength = MEMORY.INITIAL_BYTES) {
 }
 
 export function createMemoryLayout(byteLength = MEMORY.INITIAL_BYTES) {
-  const layout = createMemoryLayoutInternal();
-  if (byteLength < layout.totalBytes) {
-    throw new RangeError(
-      `WebLords: o buffer informado é menor que o layout de memória. Necessário: ${layout.totalBytes}; recebido: ${byteLength}.`
-    );
-  }
+  const layout = buildMemoryLayout();
+  validateMemoryLayout(layout, byteLength);
   return layout;
-}
-
-function createMemoryLayoutInternal() {
-  return createMemoryLayout();
 }
 
 export function createMemoryView(buffer, layout = MEMORY.LAYOUT) {
@@ -47,22 +39,14 @@ export function createMemoryView(buffer, layout = MEMORY.LAYOUT) {
     throw new TypeError("WebLords: o buffer precisa ser um SharedArrayBuffer.");
   }
 
-  if (buffer.byteLength < layout.totalBytes) {
-    throw new RangeError(
-      `WebLords: o SharedArrayBuffer possui ${buffer.byteLength} bytes, mas o layout exige ${layout.totalBytes}.`
-    );
-  }
+  validateMemoryLayout(layout, buffer.byteLength);
 
   const views = {};
   for (const name of MEMORY_REGION_NAMES) {
     const region = layout.regions[name];
-    const Constructor = name === "terrain" ? Uint8Array : (
-      ["positions", "velocities"].includes(name) ? Float32Array : Int32Array
-    );
-
-    if (region.offset % Constructor.BYTES_PER_ELEMENT !== 0) {
-      throw new RangeError(`WebLords: offset inválido para a região ${name}.`);
-    }
+    const Constructor = name === "terrain"
+      ? Uint8Array
+      : (name === "positions" || name === "velocities" ? Float32Array : Int32Array);
 
     views[name] = new Constructor(buffer, region.offset, region.length);
   }
@@ -96,7 +80,7 @@ export function validateMemoryLayout(layout = MEMORY.LAYOUT, byteLength = MEMORY
     throw new Error("WebLords: totalBytes é menor que o fim do layout.");
   }
 
-  if (byteLength < layout.totalBytes) {
+  if (!Number.isInteger(byteLength) || byteLength < layout.totalBytes) {
     throw new RangeError(
       `WebLords: tamanho insuficiente para o layout. Necessário: ${layout.totalBytes}; recebido: ${byteLength}.`
     );
