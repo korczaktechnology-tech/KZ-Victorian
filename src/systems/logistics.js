@@ -84,6 +84,18 @@ function findNearestAvailableWorker(world, destinationId) {
       }
     }
   );
+  if (selected !== null) return selected;
+
+  world.entities.query("Job", "Position", "Inventory").forEach(id => {
+    const job = world.entities.get(id, "Job");
+    const inventory = world.entities.get(id, "Inventory");
+    if (!job || !inventory || job[2] !== JOB_STATE.IDLE) return;
+    const distance = distanceSq(world, id, destinationId);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      selected = id;
+    }
+  });
   return selected;
 }
 
