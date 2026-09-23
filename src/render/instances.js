@@ -1,10 +1,21 @@
 export class InstanceBuffer {
-  constructor() {
+  constructor(gl, maxInstances = 4096) {
+    this.gl = gl;
+    this.maxInstances = maxInstances;
     this.data = new Float32Array(0);
+    this.buffer = gl?.createBuffer() ?? null;
   }
 
   resize(count) {
-    this.data = new Float32Array(count * 4);
+    const safeCount = Math.max(0, Math.min(this.maxInstances, count | 0));
+    this.data = new Float32Array(safeCount * 3);
     return this.data;
+  }
+
+  upload(count = this.data.length / 3) {
+    if (!this.gl || !this.buffer) return;
+    const safeCount = Math.max(0, Math.min(this.maxInstances, count | 0));
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, this.data.subarray(0, safeCount * 3), this.gl.DYNAMIC_DRAW);
   }
 }
