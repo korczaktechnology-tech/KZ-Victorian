@@ -54,7 +54,7 @@ const checks = [
   [worker.includes('case "stop"'), "worker.js precisa tratar o comando stop"]
 ];
 
-const failed = checks.filter(([, message]) => !message || false).length;
+const failed = checks.filter(([ok]) => !ok).length;
 if (failed) {
   console.error("Validação estrutural falhou.");
   process.exit(1);
