@@ -1,5 +1,13 @@
 export class InstanceBuffer{
- constructor(gl,maxInstances=4096){this.gl=gl;this.maxInstances=maxInstances;this.data=new Float32Array(maxInstances*3);this.buffer=gl?.createBuffer()??null;this.count=0;}
- resize(count){const n=Math.max(0,Math.min(this.maxInstances,count|0));this.count=n;return this.data.subarray(0,n*3);}
- upload(count=this.count){if(!this.gl||!this.buffer)return;const n=Math.max(0,Math.min(this.maxInstances,count|0));this.count=n;this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.buffer);this.gl.bufferData(this.gl.ARRAY_BUFFER,this.data.subarray(0,n*3),this.gl.DYNAMIC_DRAW);}
+  constructor(gl,maxInstances=4096,stride=4){
+    this.gl=gl;this.maxInstances=maxInstances;this.stride=stride;
+    this.data=new Float32Array(maxInstances*stride);this.buffer=gl?.createBuffer()??null;this.count=0;
+  }
+  resize(count){const n=Math.max(0,Math.min(this.maxInstances,count|0));this.count=n;return this.data.subarray(0,n*this.stride);}
+  upload(count=this.count){
+    if(!this.gl||!this.buffer)return;
+    const n=Math.max(0,Math.min(this.maxInstances,count|0));this.count=n;
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER,this.data.subarray(0,n*this.stride),this.gl.DYNAMIC_DRAW);
+  }
 }
