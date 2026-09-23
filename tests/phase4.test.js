@@ -35,8 +35,8 @@ test("Fase 4: comandos são aplicados no limite de um tick e geram evento", () =
   const { simulation } = createSimulation();
   simulation.handleCommand({ type: "build", payload: { x: 4, y: 0 } });
   const result = simulation.step();
-  assert.equal(result.events[0]?.type, "commandReceived");
-  assert.equal(result.events[0]?.payload.type, "build");
+  const received = result.events.find((event) => event.type === "commandReceived");
+  assert.equal(received?.payload.type, "build");
 });
 
 test("Fase 4: reset retorna o estado compartilhado para o tick zero", () => {
