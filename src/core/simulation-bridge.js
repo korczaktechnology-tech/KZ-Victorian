@@ -20,7 +20,7 @@ export function createSimulationBridge(){
    };
    worker.onerror=event=>{emit(errorListeners,event.error||new Error(event.message||"Erro no Simulation Worker."));running=false;ready=false;};
    worker.onmessageerror=()=>{emit(errorListeners,new Error("WebLords: mensagem inválida recebida do Simulation Worker."));running=false;};
-   worker.postMessage({type:"initialize"});
+   worker.postMessage({ type: "initialize" });
   },
   stop(){if(!worker)return;worker.postMessage({type:"stop"});worker.terminate();worker=null;running=false;ready=false;pendingCommands.length=0;snapshot=Object.freeze({tick:0,metrics:{},events:[],positions:new Float32Array(),player:null});},
   sendCommand(type,payload=null){
