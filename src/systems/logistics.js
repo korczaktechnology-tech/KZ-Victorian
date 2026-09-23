@@ -1,4 +1,5 @@
 import { EntityType, EntityTypeCode } from "../core/entities.js";
+import { EntityType, EntityTypeCode } from "../core/entities.js";
 import { transferInventory } from "./economy.js";
 
 export const JOB_STATE = Object.freeze({ IDLE: 0, ASSIGNED: 1, READY: 2, COMPLETED: 3 });
@@ -96,7 +97,15 @@ function findNearestAvailableWorker(world, destinationId) {
       selected = id;
     }
   });
-  return selected;
+  if (selected !== null) return selected;
+
+  for (let id = 1; id <= world.entities.capacity; id += 1) {
+    if (!world.entities.has(id) || world.entities.type(id) !== EntityTypeCode[EntityType.HABITANT]) continue;
+    const job = world.entities.get(id, "Job");
+    const inventory = world.entities.get(id, "Inventory");
+    if (job && inventory && job[2] === JOB_STATE.IDLE) return id;
+  }
+  return null;
 }
 
 export function generateWarehouseRequests(world) {
